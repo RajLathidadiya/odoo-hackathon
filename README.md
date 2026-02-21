@@ -171,7 +171,8 @@ Total Operational Cost = Fuel + Maintenance
 
 ```bash
 git clone https://github.com/RajLathidadiya/odoo-hackathon.git
-cd fleetflow
+cd odoo-hackathon
+
 ```
 
 ### 2️⃣ Setup Backend
