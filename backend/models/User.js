@@ -40,9 +40,15 @@ User.create = (newUser, result) => {
   });
 };
 
-// Get user by email
+// Get user by email with role
 User.getByEmail = (email, result) => {
-  db.query('SELECT * FROM users WHERE email = ?', [email], (err, res) => {
+  const query = `
+    SELECT u.*, r.name as role_name
+    FROM users u
+    LEFT JOIN roles r ON u.role_id = r.id
+    WHERE u.email = ?
+  `;
+  db.query(query, [email], (err, res) => {
     if (err) {
       console.log('error: ', err);
       result(err, null);
@@ -56,9 +62,15 @@ User.getByEmail = (email, result) => {
   });
 };
 
-// Get user by ID
+// Get user by ID with role
 User.getById = (id, result) => {
-  db.query('SELECT id, role_id, full_name, email, is_active, created_at FROM users WHERE id = ?', [id], (err, res) => {
+  const query = `
+    SELECT u.id, u.role_id, u.full_name, u.email, u.is_active, u.created_at, r.name as role_name
+    FROM users u
+    LEFT JOIN roles r ON u.role_id = r.id
+    WHERE u.id = ?
+  `;
+  db.query(query, [id], (err, res) => {
     if (err) {
       console.log('error: ', err);
       result(err, null);
@@ -68,6 +80,48 @@ User.getById = (id, result) => {
       } else {
         result(null, null);
       }
+    }
+  });
+};
+
+// Get all users with role details
+User.getAll = (result) => {
+  const query = `
+    SELECT u.id, u.role_id, u.full_name, u.email, u.is_active, u.created_at, r.name as role_name
+    FROM users u
+    LEFT JOIN roles r ON u.role_id = r.id
+    ORDER BY u.created_at DESC
+  `;
+  db.query(query, (err, res) => {
+    if (err) {
+      console.log('error: ', err);
+      result(err, null);
+    } else {
+      result(null, res);
+    }
+  });
+};
+
+// Update user role
+User.updateRole = (id, roleId, result) => {
+  db.query('UPDATE users SET role_id = ? WHERE id = ?', [roleId, id], (err, res) => {
+    if (err) {
+      console.log('error: ', err);
+      result(err, null);
+    } else {
+      User.getById(id, result);
+    }
+  });
+};
+
+// Update user status
+User.updateStatus = (id, isActive, result) => {
+  db.query('UPDATE users SET is_active = ? WHERE id = ?', [isActive, id], (err, res) => {
+    if (err) {
+      console.log('error: ', err);
+      result(err, null);
+    } else {
+      User.getById(id, result);
     }
   });
 };

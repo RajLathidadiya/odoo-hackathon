@@ -34,15 +34,87 @@ export default function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/vehicles" element={<VehiclesPage />} />
-              <Route path="/drivers" element={<DriversPage />} />
-              <Route path="/trips" element={<TripsPage />} />
-              <Route path="/dispatch" element={<DispatchPage />} />
-              <Route path="/maintenance" element={<MaintenancePage />} />
-              <Route path="/fuel" element={<FuelPage />} />
-              <Route path="/expenses" element={<ExpensesPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/" element={<DashboardPage />} />
+              
+              {/* Vehicles - Fleet Manager & Super Admin only */}
+              <Route
+                path="/vehicles"
+                element={
+                  <ProtectedRoute allowedRoles={['Fleet Manager', 'Super Admin', 'Dispatcher']}>
+                    <VehiclesPage />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Drivers */}
+              <Route
+                path="/drivers"
+                element={
+                  <ProtectedRoute allowedRoles={['Fleet Manager', 'Super Admin', 'Safety Officer', 'Dispatcher']}>
+                    <DriversPage />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Trips - Fleet Manager & Super Admin only */}
+              <Route
+                path="/trips"
+                element={
+                  <ProtectedRoute allowedRoles={['Fleet Manager', 'Super Admin', 'Dispatcher']}>
+                    <TripsPage />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Dispatch - Dispatcher & Super Admin only */}
+              <Route
+                path="/dispatch"
+                element={
+                  <ProtectedRoute allowedRoles={['Dispatcher', 'Super Admin']}>
+                    <DispatchPage />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Maintenance */}
+              <Route
+                path="/maintenance"
+                element={
+                  <ProtectedRoute allowedRoles={['Fleet Manager', 'Super Admin', 'Financial Analyst']}>
+                    <MaintenancePage />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Fuel */}
+              <Route
+                path="/fuel"
+                element={
+                  <ProtectedRoute allowedRoles={['Fleet Manager', 'Super Admin', 'Financial Analyst']}>
+                    <FuelPage />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Expenses */}
+              <Route
+                path="/expenses"
+                element={
+                  <ProtectedRoute allowedRoles={['Fleet Manager', 'Super Admin', 'Financial Analyst']}>
+                    <ExpensesPage />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Analytics */}
+              <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute allowedRoles={['Fleet Manager', 'Super Admin', 'Dispatcher', 'Safety Officer', 'Financial Analyst']}>
+                    <AnalyticsPage />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

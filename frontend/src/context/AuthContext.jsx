@@ -57,8 +57,43 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = !!token;
 
+  // Check if user has specific role
+  const hasRole = (roleName) => {
+    if (!user) return false;
+    // Super Admin has access to everything
+    if (user.role_name === 'Super Admin') return true;
+    return user.role_name === roleName;
+  };
+
+  // Check if user has ANY of the provided roles
+  const hasAnyRole = (roleNames) => {
+    if (!user) return false;
+    // Super Admin has access to everything
+    if (user.role_name === 'Super Admin') return true;
+    return roleNames.includes(user.role_name);
+  };
+
+  // Check if user has ALL of the provided roles
+  const hasAllRoles = (roleNames) => {
+    if (!user) return false;
+    return roleNames.includes(user.role_name);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        login,
+        register,
+        logout,
+        isAuthenticated,
+        hasRole,
+        hasAnyRole,
+        hasAllRoles,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

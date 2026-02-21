@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Import route modules
 router.use('/auth', require('./auth'));
+router.use('/users', require('./users'));
 router.use('/roles', require('./roles'));
 router.use('/vehicles', require('./vehicles'));
 router.use('/drivers', require('./drivers'));

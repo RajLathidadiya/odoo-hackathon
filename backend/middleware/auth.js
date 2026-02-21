@@ -6,7 +6,10 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ message: 'Access token required' });
+    return res.status(401).json({ 
+      message: 'Access token required',
+      error: 'No authorization token provided'
+    });
   }
 
   try {
@@ -14,24 +17,63 @@ const authenticateToken = (req, res, next) => {
       token,
       process.env.JWT_SECRET || 'default_secret'
     );
-    req.user = decoded;
+    // Attach decoded user info to request
+    req.user = {
+      userId: decoded.userId,
+      email: decoded.email,
+      role_id: decoded.role_id,
+      role: decoded.role
+    };
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
-      return res.status(401).json({ message: 'Token has expired' });
+      return res.status(401).json({ 
+        message: 'Token has expired',
+        error: 'Please login again'
+      });
     }
-    return res.status(403).json({ message: 'Invalid token' });
+    return res.status(403).json({ 
+      message: 'Invalid token',
+      error: err.message
+    });
   }
 };
 
-// Check if user has specific role
-const authorizeRole = (...allowedRoles) => {
+// Authorization middleware - Check if user has required roles
+const authorizeRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    // Authentication middleware should have already been called
+    if (!req.user) {
+      return res.status(401).json({ 
+        message: 'User not authenticated'
+      });
+    }
+
+    // Super Admin has access to everything
+    if (req.user.role === 'Super Admin') {
+      return next();
+    }
+
+    // Check if user's role is in allowed roles
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ 
+        message: 'Insufficient permissions',
+        error: `This action requires one of these roles: ${allowedRoles.join(', ')}`
+      });
+    }
+
+    next();
+  };
+};
+
+// Legacy middleware for role ID based authorization (backward compatibility)
+const authorizeRole = (...allowedRoleIds) => {
   return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
 
-    if (!allowedRoles.includes(req.user.role_id)) {
+    if (!allowedRoleIds.includes(req.user.role_id)) {
       return res.status(403).json({ message: 'Insufficient permissions' });
     }
 
@@ -39,4 +81,4 @@ const authorizeRole = (...allowedRoles) => {
   };
 };
 
-module.exports = { authenticateToken, authorizeRole };
+module.exports = { authenticateToken, authorizeRole, authorizeRoles };

@@ -19,7 +19,12 @@ const loginSchema = Joi.object({
 // Generate JWT token
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user.id, email: user.email, role_id: user.role_id },
+    {
+      userId: user.id,
+      email: user.email,
+      role_id: user.role_id,
+      role: user.role_name || 'User'
+    },
     process.env.JWT_SECRET || 'default_secret',
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
@@ -118,7 +123,8 @@ exports.login = (req, res) => {
         id: user.id,
         email: user.email,
         full_name: user.full_name,
-        role_id: user.role_id
+        role_id: user.role_id,
+        role_name: user.role_name || 'User'
       },
       token,
       refreshToken

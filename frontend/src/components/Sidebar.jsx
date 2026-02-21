@@ -1,27 +1,36 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, Truck, Users, MapPin, Send,
-  Wrench, Fuel, Receipt, BarChart3, ChevronRight
+  Wrench, Fuel, Receipt, BarChart3, ChevronRight, Settings
 } from 'lucide-react';
 
-const navItems = [
-  { path: '/', icon: LayoutDashboard, label: 'Dashboard', color: '#4f46e5' },
-  { path: '/vehicles', icon: Truck, label: 'Vehicles', color: '#2563eb' },
-  { path: '/drivers', icon: Users, label: 'Drivers', color: '#7c3aed' },
-  { path: '/trips', icon: MapPin, label: 'Trips', color: '#059669' },
-  { path: '/dispatch', icon: Send, label: 'Dispatch', color: '#d97706' },
-  { path: '/maintenance', icon: Wrench, label: 'Maintenance', color: '#e11d48' },
-  { path: '/fuel', icon: Fuel, label: 'Fuel', color: '#0891b2' },
-  { path: '/expenses', icon: Receipt, label: 'Expenses', color: '#dc2626' },
-  { path: '/analytics', icon: BarChart3, label: 'Analytics', color: '#4f46e5' },
+const allNavItems = [
+  { path: '/', icon: LayoutDashboard, label: 'Dashboard', color: '#4f46e5', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst'] },
+  { path: '/vehicles', icon: Truck, label: 'Vehicles', color: '#2563eb', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher'] },
+  { path: '/drivers', icon: Users, label: 'Drivers', color: '#7c3aed', roles: ['Super Admin', 'Fleet Manager', 'Safety Officer', 'Dispatcher'] },
+  { path: '/trips', icon: MapPin, label: 'Trips', color: '#059669', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher'] },
+  { path: '/dispatch', icon: Send, label: 'Dispatch', color: '#d97706', roles: ['Super Admin', 'Dispatcher'] },
+  { path: '/maintenance', icon: Wrench, label: 'Maintenance', color: '#e11d48', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst'] },
+  { path: '/fuel', icon: Fuel, label: 'Fuel', color: '#0891b2', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst'] },
+  { path: '/expenses', icon: Receipt, label: 'Expenses', color: '#dc2626', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst'] },
+  { path: '/analytics', icon: BarChart3, label: 'Analytics', color: '#4f46e5', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst'] },
+  { path: '/users', icon: Settings, label: 'Users', color: '#f59e0b', roles: ['Super Admin'] },
 ];
 
 export default function Sidebar({ collapsed, setCollapsed }) {
   const location = useLocation();
+  const { user, hasAnyRole } = useAuth();
   const [hovered, setHovered] = useState(false);
 
   const isExpanded = !collapsed || hovered;
+
+  // Filter nav items based on user role
+  const navItems = allNavItems.filter(item => {
+    if (!user) return false;
+    return item.roles.includes(user.role_name);
+  });
 
   return (
     <>

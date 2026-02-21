@@ -16,10 +16,11 @@ const pageTitles = {
 };
 
 const roleColors = {
-  1: { bg: '#eef2ff', color: '#4f46e5', label: 'Fleet Manager' },
-  2: { bg: '#eff6ff', color: '#2563eb', label: 'Dispatcher' },
-  3: { bg: '#f0fdf4', color: '#059669', label: 'Safety Officer' },
-  4: { bg: '#fffbeb', color: '#d97706', label: 'Financial Analyst' },
+  'Super Admin': { bg: '#fee2e2', color: '#dc2626', label: 'Super Admin' },
+  'Fleet Manager': { bg: '#eef2ff', color: '#4f46e5', label: 'Fleet Manager' },
+  'Dispatcher': { bg: '#eff6ff', color: '#2563eb', label: 'Dispatcher' },
+  'Safety Officer': { bg: '#f0fdf4', color: '#059669', label: 'Safety Officer' },
+  'Financial Analyst': { bg: '#fffbeb', color: '#d97706', label: 'Financial Analyst' },
 };
 
 export default function Topbar({ onMenuClick }) {
@@ -28,7 +29,7 @@ export default function Topbar({ onMenuClick }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const page = pageTitles[location.pathname] || { title: 'FleetFlow', subtitle: 'Fleet Management' };
 
-  const roleInfo = roleColors[user?.role_id] || { bg: '#f1f5f9', color: '#64748b', label: 'User' };
+  const roleInfo = roleColors[user?.role_name] || { bg: '#f1f5f9', color: '#64748b', label: 'User' };
   const initials = (user?.username || user?.full_name || 'U')
     .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 

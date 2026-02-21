@@ -1,14 +1,38 @@
 const express = require('express');
 const router = express.Router();
 const driverController = require('../controllers/driverController');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
 // All driver routes require authentication
 router.get('/', authenticateToken, driverController.getAll);
 router.get('/:id', authenticateToken, driverController.getById);
-router.post('/', authenticateToken, driverController.create);
-router.put('/:id', authenticateToken, driverController.update);
-router.delete('/:id', authenticateToken, driverController.delete);
-router.patch('/:id/status', authenticateToken, driverController.updateStatus);
+
+// Create driver - Fleet Manager and Super Admin only
+router.post('/', 
+  authenticateToken, 
+  authorizeRoles('Fleet Manager', 'Super Admin'),
+  driverController.create
+);
+
+// Update driver - Fleet Manager and Super Admin only
+router.put('/:id', 
+  authenticateToken, 
+  authorizeRoles('Fleet Manager', 'Super Admin'),
+  driverController.update
+);
+
+// Delete driver - Fleet Manager and Super Admin only
+router.delete('/:id', 
+  authenticateToken, 
+  authorizeRoles('Fleet Manager', 'Super Admin'),
+  driverController.delete
+);
+
+// Update driver status - Safety Officer, Fleet Manager, and Super Admin
+router.patch('/:id/status', 
+  authenticateToken, 
+  authorizeRoles('Safety Officer', 'Fleet Manager', 'Super Admin'),
+  driverController.updateStatus
+);
 
 module.exports = router;
