@@ -11,7 +11,7 @@ router.use('/dispatch', require('./dispatch'));
 router.use('/maintenance', require('./maintenance'));
 router.use('/fuel', require('./fuel'));
 router.use('/analytics', require('./analytics'));
-// router.use('/expenses', require('./expenses'));
+router.use('/expenses', require('./expenses'));
 
 // Sample route
 router.get('/', (req, res) => {
