@@ -5,9 +5,9 @@
 
 -- Step 1: Create Database
 -- ===============================================
-DROP DATABASE IF EXISTS fleet_db;
-CREATE DATABASE IF NOT EXISTS fleet_db;
-USE fleet_db;
+-- DROP DATABASE IF EXISTS fleet_db;
+-- CREATE DATABASE IF NOT EXISTS fleet_db;
+-- USE fleet_db;
 
 -- ===============================================
 -- Step 2: Create Tables

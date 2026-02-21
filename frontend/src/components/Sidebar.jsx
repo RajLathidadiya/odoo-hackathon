@@ -7,16 +7,16 @@ import {
 } from 'lucide-react';
 
 const allNavItems = [
-  { path: '/', icon: LayoutDashboard, label: 'Dashboard', color: '#4f46e5', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst'] },
-  { path: '/vehicles', icon: Truck, label: 'Vehicles', color: '#2563eb', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher'] },
-  { path: '/drivers', icon: Users, label: 'Drivers', color: '#7c3aed', roles: ['Super Admin', 'Fleet Manager', 'Safety Officer', 'Dispatcher'] },
-  { path: '/trips', icon: MapPin, label: 'Trips', color: '#059669', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher'] },
+  { path: '/', icon: LayoutDashboard, label: 'Dashboard', color: '#4f46e5', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst', 'Manager', 'Driver', 'Admin'] },
+  { path: '/users', icon: Settings, label: 'User Management', color: '#f59e0b', roles: ['Super Admin'] },
+  { path: '/vehicles', icon: Truck, label: 'Vehicles', color: '#2563eb', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher', 'Manager', 'Admin'] },
+  { path: '/drivers', icon: Users, label: 'Drivers', color: '#7c3aed', roles: ['Super Admin', 'Fleet Manager', 'Safety Officer', 'Dispatcher', 'Manager'] },
+  { path: '/trips', icon: MapPin, label: 'Trips', color: '#059669', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher', 'Driver'] },
   { path: '/dispatch', icon: Send, label: 'Dispatch', color: '#d97706', roles: ['Super Admin', 'Dispatcher'] },
-  { path: '/maintenance', icon: Wrench, label: 'Maintenance', color: '#e11d48', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst'] },
+  { path: '/maintenance', icon: Wrench, label: 'Maintenance', color: '#e11d48', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst', 'Manager'] },
   { path: '/fuel', icon: Fuel, label: 'Fuel', color: '#0891b2', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst'] },
-  { path: '/expenses', icon: Receipt, label: 'Expenses', color: '#dc2626', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst'] },
-  { path: '/analytics', icon: BarChart3, label: 'Analytics', color: '#4f46e5', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst'] },
-  { path: '/user-management', icon: Settings, label: 'User Management', color: '#f59e0b', roles: ['Super Admin'] },
+  { path: '/expenses', icon: Receipt, label: 'Expenses', color: '#dc2626', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst', 'Manager'] },
+  { path: '/analytics', icon: BarChart3, label: 'Analytics', color: '#4f46e5', roles: ['Super Admin', 'Fleet Manager', 'Safety Officer', 'Financial Analyst', 'Manager'] },
 ];
 
 export default function Sidebar({ collapsed, setCollapsed }) {

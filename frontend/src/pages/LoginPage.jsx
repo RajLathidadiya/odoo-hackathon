@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { Truck, Eye, EyeOff, ArrowRight, Shield, BarChart3, MapPin } from 'lucide-react';
+import { getRoleRedirectPath } from '../utils/roleRedirect';
 
 const features = [
   { icon: Truck, text: 'Fleet lifecycle management' },
@@ -19,7 +20,12 @@ export default function LoginPage() {
 
   const onSubmit = async (d) => {
     const ok = await login(d.email, d.password);
-    if (ok) navigate('/');
+    if (ok) {
+      // Get user from context and redirect based on role
+      const user = JSON.parse(localStorage.getItem('user'));
+      const redirectPath = getRoleRedirectPath(user);
+      navigate(redirectPath);
+    }
   };
 
   return (

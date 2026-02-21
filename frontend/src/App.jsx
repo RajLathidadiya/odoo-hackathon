@@ -119,7 +119,7 @@ export default function App() {
 
               {/* User Management - Super Admin only */}
               <Route
-                path="/user-management"
+                path="/users"
                 element={
                   <ProtectedRoute allowedRoles={['Super Admin']}>
                     <UserManagementPage />
