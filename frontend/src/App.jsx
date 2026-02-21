@@ -24,11 +24,9 @@ export default function App() {
       <AuthProvider>
         <Router>
           <Routes>
-            {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
 
-            {/* Protected routes */}
             <Route
               element={
                 <ProtectedRoute>
@@ -47,7 +45,6 @@ export default function App() {
               <Route path="/analytics" element={<AnalyticsPage />} />
             </Route>
 
-            {/* Catch all */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
@@ -57,19 +54,17 @@ export default function App() {
           toastOptions={{
             duration: 3000,
             style: {
-              background: '#1e293b',
-              color: '#f1f5f9',
-              borderRadius: '12px',
-              padding: '12px 16px',
-              fontSize: '14px',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: '#fff',
+              color: '#0f172a',
+              borderRadius: '14px',
+              padding: '12px 18px',
+              fontSize: '13px',
+              fontWeight: 500,
+              border: '1px solid #f1f5f9',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
             },
-            success: {
-              iconTheme: { primary: '#22c55e', secondary: '#fff' },
-            },
-            error: {
-              iconTheme: { primary: '#ef4444', secondary: '#fff' },
-            },
+            success: { iconTheme: { primary: '#059669', secondary: '#fff' } },
+            error: { iconTheme: { primary: '#dc2626', secondary: '#fff' } },
           }}
         />
       </AuthProvider>

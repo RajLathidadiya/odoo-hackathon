@@ -2,95 +2,92 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
-import { Truck, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Truck, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-
+  const [showPwd, setShowPwd] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const onSubmit = async (data) => {
-    const success = await login(data.email, data.password);
-    if (success) navigate('/');
+  const onSubmit = async (d) => {
+    const ok = await login(d.email, d.password);
+    if (ok) navigate('/');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-900 via-primary-950 to-surface-900 px-4">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary-600/10 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative w-full max-w-md">
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: '#F6F8FB', padding: 20,
+    }}>
+      <div className="anim-fade-up" style={{ width: '100%', maxWidth: 400 }}>
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/20">
-            <Truck size={28} className="text-white" />
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: 16,
+            background: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 14px',
+            boxShadow: '0 4px 14px rgba(79,70,229,0.3)',
+          }}>
+            <Truck size={24} color="#fff" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-          <p className="text-surface-400 mt-1">Sign in to FleetPro dashboard</p>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', margin: '0 0 4px' }}>FleetFlow</h1>
+          <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>Fleet & Logistics Management</p>
         </div>
 
-        {/* Form */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-surface-300 mb-2">Email</label>
-              <div className="relative">
-                <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-500" />
-                <input
-                  type="email"
-                  {...register('email', { required: 'Email is required' })}
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50"
-                  placeholder="you@example.com"
-                />
-              </div>
-              {errors.email && <p className="mt-1.5 text-xs text-red-400">{errors.email.message}</p>}
+        {/* Card */}
+        <div className="ff-card" style={{ padding: 32 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '0 0 24px' }}>
+            Sign in to your account
+          </h2>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div style={{ marginBottom: 18 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#334155', marginBottom: 6 }}>Email</label>
+              <input
+                type="email"
+                {...register('email', { required: 'Required' })}
+                className="ff-input"
+                placeholder="you@company.com"
+              />
+              {errors.email && <p style={{ fontSize: 12, color: '#dc2626', margin: '4px 0 0' }}>{errors.email.message}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-surface-300 mb-2">Password</label>
-              <div className="relative">
-                <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-500" />
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#334155', marginBottom: 6 }}>Password</label>
+              <div style={{ position: 'relative' }}>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  {...register('password', { required: 'Password is required' })}
-                  className="w-full pl-11 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50"
+                  type={showPwd ? 'text' : 'password'}
+                  {...register('password', { required: 'Required' })}
+                  className="ff-input"
+                  style={{ paddingRight: 42 }}
                   placeholder="••••••••"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-surface-500 hover:text-surface-300"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                <button type="button" onClick={() => setShowPwd(!showPwd)}
+                  style={{
+                    position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: 0,
+                  }}>
+                  {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {errors.password && <p className="mt-1.5 text-xs text-red-400">{errors.password.message}</p>}
+              {errors.password && <p style={{ fontSize: 12, color: '#dc2626', margin: '4px 0 0' }}>{errors.password.message}</p>}
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
+            <button type="submit" disabled={loading} className="btn-primary"
+              style={{ width: '100%', justifyContent: 'center', padding: '12px 0', borderRadius: 14, fontSize: 14 }}>
               {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', animation: 'spin 0.7s linear infinite' }} />
                   Signing in...
                 </span>
-              ) : (
-                'Sign In'
-              )}
+              ) : 'Sign In'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-surface-400 mt-6">
+          <p style={{ textAlign: 'center', fontSize: 13, color: '#94a3b8', marginTop: 20 }}>
             Don't have an account?{' '}
-            <Link to="/register" className="text-primary-400 hover:text-primary-300 font-medium">
+            <Link to="/register" style={{ color: '#4f46e5', fontWeight: 600, textDecoration: 'none' }}>
               Sign up
             </Link>
           </p>

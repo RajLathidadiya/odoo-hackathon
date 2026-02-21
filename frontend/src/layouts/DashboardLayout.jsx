@@ -7,12 +7,14 @@ export default function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
-    <div className="min-h-screen bg-surface-50 dark:bg-surface-950">
+    <div style={{ minHeight: '100vh', background: '#F6F8FB' }}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-      <div className={`transition-all duration-300 ${collapsed ? 'lg:ml-[72px]' : 'lg:ml-64'}`}>
+      {/* Main area — offset by sidebar width (72px) on desktop */}
+      <div className="lg:ml-[72px] transition-[margin-left] duration-300">
+
         <Topbar onMenuClick={() => setCollapsed(!collapsed)} />
-        <main className="p-4 lg:p-6">
+        <main style={{ padding: '20px 28px 28px' }}>
           <Outlet />
         </main>
       </div>

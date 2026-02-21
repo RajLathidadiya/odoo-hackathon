@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { maintenanceAPI, vehiclesAPI } from '../services/api';
-import { PageLoader } from '../components/LoadingSpinner';
-import Modal from '../components/Modal';
 import { useForm } from 'react-hook-form';
-import { Plus, Wrench } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
+import Modal from '../components/Modal';
+import { PageLoader } from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 
 export default function MaintenancePage() {
   const [records, setRecords] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
@@ -19,72 +19,63 @@ export default function MaintenancePage() {
 
   const fetchData = async () => {
     try {
-      const [mainRes, vehRes] = await Promise.all([maintenanceAPI.getAll(), vehiclesAPI.getAll()]);
-      setRecords(mainRes.data?.data || mainRes.data || []);
-      setVehicles(vehRes.data?.data || vehRes.data || []);
+      const [m, v] = await Promise.all([maintenanceAPI.getAll(), vehiclesAPI.getAll()]);
+      setRecords(m.data.data || m.data || []);
+      setVehicles(v.data.data || v.data || []);
     } catch { toast.error('Failed to load data'); }
     finally { setLoading(false); }
   };
 
   const onSubmit = async (data) => {
-    setSubmitting(true);
+    const payload = {
+      vehicle_id: Number(data.vehicle_id),
+      service_type: data.service_type,
+      cost: Number(data.cost),
+      service_date: data.service_date,
+    };
     try {
-      await maintenanceAPI.create({
-        ...data,
-        vehicle_id: parseInt(data.vehicle_id),
-        cost: parseFloat(data.cost),
-      });
-      toast.success('Maintenance record added. Vehicle status set to In Shop.');
-      setShowModal(false);
-      reset();
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to add record');
-    } finally { setSubmitting(false); }
+      await maintenanceAPI.create(payload);
+      toast.success('Maintenance logged');
+      setModalOpen(false); reset(); fetchData();
+    } catch (e) { toast.error(e.response?.data?.message || e.response?.data?.details || 'Error'); }
   };
+
+  const filtered = records.filter(r => {
+    const q = search.toLowerCase();
+    return !q || [r.service_type].some(f => f?.toLowerCase().includes(q));
+  });
 
   if (loading) return <PageLoader />;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-surface-900 dark:text-white">Maintenance</h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1">{records.length} maintenance records</p>
-        </div>
-        <button onClick={() => { reset({ vehicle_id: '', description: '', cost: '', maintenance_date: '', maintenance_type: 'Routine' }); setShowModal(true); }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl shadow-sm">
-          <Plus size={18} /> Log Maintenance
-        </button>
+    <div className="anim-fade-up" style={{ maxWidth: 1200 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <span className="badge badge-gray">{filtered.length} records</span>
+        <button className="btn-primary" onClick={() => { reset({ vehicle_id: '', service_type: '', cost: '', service_date: '' }); setModalOpen(true); }}><Plus size={15} /> Log Maintenance</button>
       </div>
 
-      <div className="card p-0 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-surface-200 dark:border-surface-700">
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Vehicle</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Type</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Description</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Cost</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
-              {records.length === 0 ? (
-                <tr><td colSpan="5" className="px-6 py-12 text-center text-surface-400">
-                  <Wrench size={40} className="mx-auto mb-3 opacity-30" />
-                  <p>No maintenance records</p>
-                </td></tr>
-              ) : records.map((r, i) => (
-                <tr key={r.id || i} className="hover:bg-surface-50 dark:hover:bg-surface-800/50">
-                  <td className="px-6 py-4 font-medium text-surface-900 dark:text-white">{r.vehicle_code || r.vehicle_model || `Vehicle #${r.vehicle_id}`}</td>
-                  <td className="px-6 py-4">
-                    <span className="px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium">{r.maintenance_type || 'General'}</span>
-                  </td>
-                  <td className="px-6 py-4 text-surface-700 dark:text-surface-300 max-w-xs truncate">{r.description}</td>
-                  <td className="px-6 py-4 text-surface-700 dark:text-surface-300 font-mono">₹{(r.cost || 0).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-surface-700 dark:text-surface-300 text-xs">{r.maintenance_date ? new Date(r.maintenance_date).toLocaleDateString() : 'N/A'}</td>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+        <div style={{ position: 'relative', flex: '1 1 240px' }}>
+          <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <input className="ff-input" style={{ paddingLeft: 34 }} placeholder="Search maintenance..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+      </div>
+
+      <div className="ff-card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="ff-table">
+            <thead><tr>
+              <th>Vehicle</th><th>Service Type</th><th>Cost</th><th>Date</th>
+            </tr></thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={4} style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>No records</td></tr>
+              ) : filtered.map((r, i) => (
+                <tr key={r.id || i}>
+                  <td style={{ fontWeight: 600, color: '#0f172a' }}>{vehicles.find(v => v.id === r.vehicle_id)?.vehicle_code || `Vehicle #${r.vehicle_id}`}</td>
+                  <td>{r.service_type || '—'}</td>
+                  <td style={{ fontWeight: 600 }}>₹{r.cost ? Number(r.cost).toLocaleString() : '—'}</td>
+                  <td>{r.service_date ? new Date(r.service_date).toLocaleDateString() : '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -92,47 +83,36 @@ export default function MaintenancePage() {
         </div>
       </div>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Log Maintenance">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Vehicle</label>
-            <select {...register('vehicle_id', { required: 'Required' })} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white">
-              <option value="">Select vehicle...</option>
-              {vehicles.map(v => <option key={v.id} value={v.id}>{v.vehicle_code} — {v.model}</option>)}
-            </select>
-            {errors.vehicle_id && <p className="text-xs text-red-500 mt-1">{errors.vehicle_id.message}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Maintenance Type</label>
-            <select {...register('maintenance_type')} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white">
-              <option value="Routine">Routine</option>
-              <option value="Repair">Repair</option>
-              <option value="Inspection">Inspection</option>
-              <option value="Emergency">Emergency</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Description</label>
-            <textarea {...register('description', { required: 'Required' })} rows={3} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30" />
-            {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Cost (₹)</label>
-              <input type="number" step="0.01" {...register('cost', { required: 'Required' })} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30" />
-              {errors.cost && <p className="text-xs text-red-500 mt-1">{errors.cost.message}</p>}
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Log Maintenance">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ gridColumn: 'span 2' }}>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle *</label>
+              <select className="ff-select" style={{ width: '100%' }} {...register('vehicle_id', { required: 'Required' })}>
+                <option value="">Select vehicle</option>
+                {vehicles.map(v => <option key={v.id} value={v.id}>{v.vehicle_code} — {v.license_plate}</option>)}
+              </select>
+              {errors.vehicle_id && <p style={{ fontSize: 11, color: '#dc2626', marginTop: 2 }}>{errors.vehicle_id.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Date</label>
-              <input type="date" {...register('maintenance_date', { required: 'Required' })} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30" />
-              {errors.maintenance_date && <p className="text-xs text-red-500 mt-1">{errors.maintenance_date.message}</p>}
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Service Type *</label>
+              <input className="ff-input" {...register('service_type', { required: 'Required' })} placeholder="Oil Change, Tire Rotation..." />
+              {errors.service_type && <p style={{ fontSize: 11, color: '#dc2626', marginTop: 2 }}>{errors.service_type.message}</p>}
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Cost (₹) *</label>
+              <input className="ff-input" type="number" {...register('cost', { required: 'Required' })} placeholder="5000" />
+              {errors.cost && <p style={{ fontSize: 11, color: '#dc2626', marginTop: 2 }}>{errors.cost.message}</p>}
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Service Date *</label>
+              <input className="ff-input" type="date" {...register('service_date', { required: 'Required' })} />
+              {errors.service_date && <p style={{ fontSize: 11, color: '#dc2626', marginTop: 2 }}>{errors.service_date.message}</p>}
             </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2.5 text-sm font-medium rounded-xl border border-surface-300 dark:border-surface-600 text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800">Cancel</button>
-            <button type="submit" disabled={submitting} className="flex-1 py-2.5 text-sm font-medium rounded-xl bg-primary-600 hover:bg-primary-700 text-white disabled:opacity-50">
-              {submitting ? 'Saving...' : 'Log Maintenance'}
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 22 }}>
+            <button type="button" className="btn-secondary" onClick={() => setModalOpen(false)}>Cancel</button>
+            <button type="submit" className="btn-primary">Log Maintenance</button>
           </div>
         </form>
       </Modal>

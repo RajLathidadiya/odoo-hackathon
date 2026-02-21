@@ -245,8 +245,8 @@ exports.getFuelEfficiency = (req, res) => {
         fleet_statistics: {
           total_vehicles_tracked: vehicles.length,
           fleet_average_fuel_efficiency_kmpl: parseFloat(avgEfficiency),
-          fleet_average_cost_per_liter: avgCostPerLiter.toFixed(2),
-          total_fuel_cost: totalCost.toFixed(2)
+          fleet_average_cost_per_liter: Number(avgCostPerLiter).toFixed(2),
+          total_fuel_cost: Number(totalCost).toFixed(2)
         },
         best_performing: bestVehicle,
         worst_performing: worstVehicle,

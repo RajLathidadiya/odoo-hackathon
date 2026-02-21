@@ -1,168 +1,110 @@
 import { useState, useEffect } from 'react';
-import { fuelAPI, vehiclesAPI, tripsAPI } from '../services/api';
-import { PageLoader } from '../components/LoadingSpinner';
-import Modal from '../components/Modal';
+import { fuelAPI, vehiclesAPI } from '../services/api';
 import { useForm } from 'react-hook-form';
-import { Plus, Fuel } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
+import Modal from '../components/Modal';
+import { PageLoader } from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 
 export default function FuelPage() {
-  const [logs, setLogs] = useState([]);
+  const [records, setRecords] = useState([]);
   const [vehicles, setVehicles] = useState([]);
-  const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
+  const [search, setSearch] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
   useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     try {
-      const [fuelRes, vehRes, tripRes] = await Promise.all([fuelAPI.getAll(), vehiclesAPI.getAll(), tripsAPI.getAll()]);
-      setLogs(fuelRes.data?.data || fuelRes.data || []);
-      setVehicles(vehRes.data?.data || vehRes.data || []);
-      setTrips(tripRes.data?.data || tripRes.data || []);
+      const [f, v] = await Promise.all([fuelAPI.getAll(), vehiclesAPI.getAll()]);
+      setRecords(f.data.data || f.data || []);
+      setVehicles(v.data.data || v.data || []);
     } catch { toast.error('Failed to load data'); }
     finally { setLoading(false); }
   };
 
   const onSubmit = async (data) => {
-    setSubmitting(true);
+    const payload = { vehicle_id: Number(data.vehicle_id), liters: Number(data.liters), cost: Number(data.cost), odometer_reading: Number(data.odometer_reading), fuel_date: data.fuel_date };
     try {
-      await fuelAPI.create({
-        vehicle_id: parseInt(data.vehicle_id),
-        trip_id: data.trip_id ? parseInt(data.trip_id) : null,
-        liters: parseFloat(data.liters),
-        cost: parseFloat(data.cost),
-        odometer_reading: parseFloat(data.odometer_reading),
-        fuel_date: data.fuel_date,
-      });
+      await fuelAPI.create(payload);
       toast.success('Fuel log added');
-      setShowModal(false);
-      reset();
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to add fuel log');
-    } finally { setSubmitting(false); }
+      setModalOpen(false); reset(); fetchData();
+    } catch (e) { toast.error(e.response?.data?.message || 'Error'); }
   };
 
-  const totalLiters = logs.reduce((sum, l) => sum + (l.liters || 0), 0);
-  const totalCost = logs.reduce((sum, l) => sum + (l.cost || 0), 0);
-  const avgEfficiency = logs.length > 0 ? (logs.reduce((sum, l) => sum + (l.odometer_reading || 0), 0) / totalLiters).toFixed(1) : 0;
+  const filtered = records.filter(r => {
+    if (!search) return true;
+    const veh = vehicles.find(v => v.id === r.vehicle_id);
+    return veh?.vehicle_code?.toLowerCase().includes(search.toLowerCase());
+  });
 
   if (loading) return <PageLoader />;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-surface-900 dark:text-white">Fuel Logs</h1>
-          <p className="text-surface-500 dark:text-surface-400 mt-1">{logs.length} fuel entries</p>
-        </div>
-        <button onClick={() => { reset({ vehicle_id: '', trip_id: '', liters: '', cost: '', odometer_reading: '', fuel_date: '' }); setShowModal(true); }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl shadow-sm">
-          <Plus size={18} /> Add Fuel Log
-        </button>
+    <div className="anim-fade-up" style={{ maxWidth: 1200 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <span className="badge badge-gray">{filtered.length} records</span>
+        <button className="btn-primary" onClick={() => { reset({ vehicle_id: '', liters: '', cost: '', odometer_reading: '', fuel_date: '' }); setModalOpen(true); }}><Plus size={15} /> Log Fuel</button>
       </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="card text-center">
-          <p className="text-sm text-surface-500 dark:text-surface-400">Total Liters</p>
-          <p className="text-2xl font-bold text-surface-900 dark:text-white mt-1">{totalLiters.toLocaleString()} L</p>
-        </div>
-        <div className="card text-center">
-          <p className="text-sm text-surface-500 dark:text-surface-400">Total Fuel Cost</p>
-          <p className="text-2xl font-bold text-surface-900 dark:text-white mt-1">₹{totalCost.toLocaleString()}</p>
-        </div>
-        <div className="card text-center">
-          <p className="text-sm text-surface-500 dark:text-surface-400">Avg Efficiency</p>
-          <p className="text-2xl font-bold text-surface-900 dark:text-white mt-1">{avgEfficiency} km/L</p>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+        <div style={{ position: 'relative', flex: '1 1 240px' }}>
+          <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <input className="ff-input" style={{ paddingLeft: 34 }} placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
       </div>
-
-      <div className="card p-0 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-surface-200 dark:border-surface-700">
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Vehicle</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Trip</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Liters</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Cost</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Odometer</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
-              {logs.length === 0 ? (
-                <tr><td colSpan="6" className="px-6 py-12 text-center text-surface-400">
-                  <Fuel size={40} className="mx-auto mb-3 opacity-30" />
-                  <p>No fuel logs</p>
-                </td></tr>
-              ) : logs.map((l, i) => (
-                <tr key={l.id || i} className="hover:bg-surface-50 dark:hover:bg-surface-800/50">
-                  <td className="px-6 py-4 font-medium text-surface-900 dark:text-white">{l.vehicle_code || `Vehicle #${l.vehicle_id}`}</td>
-                  <td className="px-6 py-4 text-surface-700 dark:text-surface-300">{l.trip_id ? `Trip #${l.trip_id}` : '-'}</td>
-                  <td className="px-6 py-4 text-surface-700 dark:text-surface-300">{l.liters} L</td>
-                  <td className="px-6 py-4 text-surface-700 dark:text-surface-300 font-mono">₹{(l.cost || 0).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-surface-700 dark:text-surface-300">{(l.odometer_reading || 0).toLocaleString()} km</td>
-                  <td className="px-6 py-4 text-surface-700 dark:text-surface-300 text-xs">{l.fuel_date ? new Date(l.fuel_date).toLocaleDateString() : 'N/A'}</td>
+      <div className="ff-card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="ff-table">
+            <thead><tr><th>Vehicle</th><th>Liters</th><th>Cost</th><th>Cost/L</th><th>Odometer</th><th>Date</th></tr></thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>No records</td></tr>
+              ) : filtered.map((r, i) => (
+                <tr key={r.id || i}>
+                  <td style={{ fontWeight: 600, color: '#0f172a' }}>{vehicles.find(v => v.id === r.vehicle_id)?.vehicle_code || `#${r.vehicle_id}`}</td>
+                  <td>{r.liters || '—'} L</td>
+                  <td style={{ fontWeight: 600 }}>₹{r.cost ? Number(r.cost).toLocaleString() : '—'}</td>
+                  <td>{r.liters && r.cost ? `₹${(Number(r.cost) / Number(r.liters)).toFixed(2)}` : '—'}</td>
+                  <td>{r.odometer_reading ? `${Number(r.odometer_reading).toLocaleString()} km` : '—'}</td>
+                  <td>{r.fuel_date ? new Date(r.fuel_date).toLocaleDateString() : '—'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Fuel Log">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Vehicle</label>
-              <select {...register('vehicle_id', { required: 'Required' })} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white">
-                <option value="">Select vehicle...</option>
-                {vehicles.map(v => <option key={v.id} value={v.id}>{v.vehicle_code} — {v.model}</option>)}
-              </select>
-              {errors.vehicle_id && <p className="text-xs text-red-500 mt-1">{errors.vehicle_id.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Trip (Optional)</label>
-              <select {...register('trip_id')} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white">
-                <option value="">No trip</option>
-                {trips.map(t => <option key={t.id} value={t.id}>#{t.id} — {t.origin} → {t.destination}</option>)}
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Log Fuel">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ gridColumn: 'span 2' }}>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle *</label>
+              <select className="ff-select" style={{ width: '100%' }} {...register('vehicle_id', { required: 'Required' })}>
+                <option value="">Select vehicle</option>
+                {vehicles.map(v => <option key={v.id} value={v.id}>{v.vehicle_code} — {v.license_plate}</option>)}
               </select>
             </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Liters</label>
-              <input type="number" step="0.1" {...register('liters', { required: 'Required' })} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30" />
-              {errors.liters && <p className="text-xs text-red-500 mt-1">{errors.liters.message}</p>}
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Liters *</label>
+              <input className="ff-input" type="number" step="0.1" {...register('liters', { required: 'Required' })} placeholder="50" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Cost (₹)</label>
-              <input type="number" step="0.01" {...register('cost', { required: 'Required' })} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30" />
-              {errors.cost && <p className="text-xs text-red-500 mt-1">{errors.cost.message}</p>}
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Total Cost (₹) *</label>
+              <input className="ff-input" type="number" {...register('cost', { required: 'Required' })} placeholder="4775" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Odometer</label>
-              <input type="number" {...register('odometer_reading', { required: 'Required' })} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30" />
-              {errors.odometer_reading && <p className="text-xs text-red-500 mt-1">{errors.odometer_reading.message}</p>}
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Odometer (km) *</label>
+              <input className="ff-input" type="number" {...register('odometer_reading', { required: 'Required' })} placeholder="45000" />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Date *</label>
+              <input className="ff-input" type="date" {...register('fuel_date', { required: 'Required' })} />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Date</label>
-            <input type="date" {...register('fuel_date', { required: 'Required' })} className="w-full px-3.5 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30" />
-            {errors.fuel_date && <p className="text-xs text-red-500 mt-1">{errors.fuel_date.message}</p>}
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2.5 text-sm font-medium rounded-xl border border-surface-300 dark:border-surface-600 text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800">Cancel</button>
-            <button type="submit" disabled={submitting} className="flex-1 py-2.5 text-sm font-medium rounded-xl bg-primary-600 hover:bg-primary-700 text-white disabled:opacity-50">
-              {submitting ? 'Saving...' : 'Add Fuel Log'}
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 22 }}>
+            <button type="button" className="btn-secondary" onClick={() => setModalOpen(false)}>Cancel</button>
+            <button type="submit" className="btn-primary">Log Fuel</button>
           </div>
         </form>
       </Modal>

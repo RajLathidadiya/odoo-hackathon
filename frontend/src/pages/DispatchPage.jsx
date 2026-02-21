@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { dispatchAPI, tripsAPI, vehiclesAPI, driversAPI } from '../services/api';
 import { PageLoader } from '../components/LoadingSpinner';
 import StatusBadge from '../components/StatusBadge';
-import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function DispatchPage() {
@@ -10,145 +9,109 @@ export default function DispatchPage() {
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({ trip_id: '', vehicle_id: '', driver_id: '' });
   const [submitting, setSubmitting] = useState(false);
-
-  const [selectedTrip, setSelectedTrip] = useState('');
-  const [selectedVehicle, setSelectedVehicle] = useState('');
-  const [selectedDriver, setSelectedDriver] = useState('');
 
   useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     try {
-      const [tripsRes, vehiclesRes, driversRes] = await Promise.all([
-        tripsAPI.getAll(), vehiclesAPI.getAll(), driversAPI.getAll()
-      ]);
-      const allTrips = tripsRes.data?.data || tripsRes.data || [];
-      const allVehicles = vehiclesRes.data?.data || vehiclesRes.data || [];
-      const allDrivers = driversRes.data?.data || driversRes.data || [];
-
-      setTrips(allTrips.filter(t => t.status === 'Pending' || t.status === 'Draft'));
-      setVehicles(allVehicles.filter(v => v.status === 'Available'));
-      setDrivers(allDrivers.filter(d => d.status === 'Available' || d.status === 'Active'));
+      const [t, v, d] = await Promise.all([tripsAPI.getAll(), vehiclesAPI.getAll(), driversAPI.getAll()]);
+      setTrips(t.data.data || t.data || []);
+      setVehicles(v.data.data || v.data || []);
+      setDrivers(d.data.data || d.data || []);
     } catch { toast.error('Failed to load data'); }
     finally { setLoading(false); }
   };
 
-  const handleAssign = async (e) => {
-    e.preventDefault();
-    if (!selectedTrip || !selectedVehicle || !selectedDriver) {
-      toast.error('Please select trip, vehicle, and driver');
-      return;
-    }
+  const draftTrips = trips.filter(t => t.status === 'Draft');
+  const availableVehicles = vehicles.filter(v => v.status === 'Available');
+  const availableDrivers = drivers.filter(d => d.status === 'Available');
+  const activeDispatches = trips.filter(t => t.status === 'Dispatched');
+
+  const handleAssign = async () => {
+    if (!form.trip_id || !form.vehicle_id || !form.driver_id) { toast.error('Select all fields'); return; }
     setSubmitting(true);
     try {
-      await dispatchAPI.assign({
-        trip_id: parseInt(selectedTrip),
-        vehicle_id: parseInt(selectedVehicle),
-        driver_id: parseInt(selectedDriver),
-      });
-      toast.success('Trip dispatched successfully!');
-      setSelectedTrip(''); setSelectedVehicle(''); setSelectedDriver('');
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Dispatch failed');
-    } finally { setSubmitting(false); }
+      await dispatchAPI.assign({ trip_id: Number(form.trip_id), vehicle_id: Number(form.vehicle_id), driver_id: Number(form.driver_id) });
+      toast.success('Trip dispatched!');
+      setForm({ trip_id: '', vehicle_id: '', driver_id: '' }); fetchData();
+    } catch (e) { toast.error(e.response?.data?.message || 'Error'); }
+    finally { setSubmitting(false); }
   };
 
-  const canSubmit = selectedTrip && selectedVehicle && selectedDriver && !submitting;
+  const handleComplete = async (tripId) => {
+    try { await dispatchAPI.complete({ trip_id: tripId }); toast.success('Trip completed'); fetchData(); }
+    catch (e) { toast.error(e.response?.data?.message || 'Error'); }
+  };
+
+  const handleCancel = async (tripId) => {
+    try { await dispatchAPI.cancel({ trip_id: tripId }); toast.success('Trip cancelled'); fetchData(); }
+    catch (e) { toast.error(e.response?.data?.message || 'Error'); }
+  };
 
   if (loading) return <PageLoader />;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-surface-900 dark:text-white">Dispatch</h1>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">Assign vehicles and drivers to trips</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Availability Cards */}
-        <div className="card text-center">
-          <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{trips.length}</div>
-          <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">Pending Trips</p>
-        </div>
-        <div className="card text-center">
-          <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{vehicles.length}</div>
-          <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">Available Vehicles</p>
-        </div>
-        <div className="card text-center">
-          <div className="text-3xl font-bold text-violet-600 dark:text-violet-400">{drivers.length}</div>
-          <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">Available Drivers</p>
-        </div>
-      </div>
-
-      {/* Dispatch Form */}
-      <div className="card max-w-2xl">
-        <h2 className="text-lg font-semibold text-surface-900 dark:text-white mb-6 flex items-center gap-2">
-          <Send size={20} className="text-primary-600" />
-          Dispatch Assignment
-        </h2>
-
-        {(trips.length === 0 || vehicles.length === 0 || drivers.length === 0) && (
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 mb-6">
-            <AlertCircle size={20} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-amber-700 dark:text-amber-300">
-              {trips.length === 0 && <p>No pending trips available for dispatch.</p>}
-              {vehicles.length === 0 && <p>No vehicles currently available.</p>}
-              {drivers.length === 0 && <p>No drivers currently available.</p>}
-            </div>
-          </div>
-        )}
-
-        <form onSubmit={handleAssign} className="space-y-5">
+    <div className="anim-fade-up" style={{ maxWidth: 1200 }}>
+      {/* Assign Form */}
+      <div className="ff-card" style={{ marginBottom: 24 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: '0 0 16px' }}>Assign Trip</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 12, alignItems: 'end' }}>
           <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">Select Trip</label>
-            <select value={selectedTrip} onChange={(e) => setSelectedTrip(e.target.value)} disabled={trips.length === 0}
-              className="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30 disabled:opacity-50">
-              <option value="">Choose a trip...</option>
-              {trips.map(t => (
-                <option key={t.id} value={t.id}>
-                  #{t.id} — {t.origin} → {t.destination} ({t.status})
-                </option>
-              ))}
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Trip (Draft)</label>
+            <select className="ff-select" style={{ width: '100%' }} value={form.trip_id} onChange={e => setForm({ ...form, trip_id: e.target.value })}>
+              <option value="">Select trip</option>
+              {draftTrips.map(t => <option key={t.id} value={t.id}>{t.trip_code} — {t.origin} → {t.destination}</option>)}
             </select>
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">Select Vehicle</label>
-            <select value={selectedVehicle} onChange={(e) => setSelectedVehicle(e.target.value)} disabled={vehicles.length === 0}
-              className="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30 disabled:opacity-50">
-              <option value="">Choose a vehicle...</option>
-              {vehicles.map(v => (
-                <option key={v.id} value={v.id}>
-                  {v.vehicle_code} — {v.model} ({v.license_plate})
-                </option>
-              ))}
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle (Available)</label>
+            <select className="ff-select" style={{ width: '100%' }} value={form.vehicle_id} onChange={e => setForm({ ...form, vehicle_id: e.target.value })}>
+              <option value="">Select vehicle</option>
+              {availableVehicles.map(v => <option key={v.id} value={v.id}>{v.vehicle_code} ({v.max_capacity_kg}kg)</option>)}
             </select>
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">Select Driver</label>
-            <select value={selectedDriver} onChange={(e) => setSelectedDriver(e.target.value)} disabled={drivers.length === 0}
-              className="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/30 disabled:opacity-50">
-              <option value="">Choose a driver...</option>
-              {drivers.map(d => (
-                <option key={d.id} value={d.id}>
-                  {d.first_name} {d.last_name} — {d.license_number}
-                </option>
-              ))}
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Driver (Available)</label>
+            <select className="ff-select" style={{ width: '100%' }} value={form.driver_id} onChange={e => setForm({ ...form, driver_id: e.target.value })}>
+              <option value="">Select driver</option>
+              {availableDrivers.map(d => <option key={d.id} value={d.id}>{d.full_name}</option>)}
             </select>
           </div>
-
-          <button type="submit" disabled={!canSubmit}
-            className="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-            {submitting ? (
-              <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Dispatching...</>
-            ) : (
-              <><CheckCircle2 size={18} /> Dispatch Trip</>
-            )}
+          <button className="btn-primary" onClick={handleAssign} disabled={submitting} style={{ whiteSpace: 'nowrap' }}>
+            {submitting ? 'Assigning...' : 'Dispatch'}
           </button>
-        </form>
+        </div>
+      </div>
+
+      {/* Active Dispatches */}
+      <div className="ff-card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '18px 24px', borderBottom: '1px solid #f1f5f9' }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Active Dispatches <span className="badge badge-blue" style={{ marginLeft: 8 }}>{activeDispatches.length}</span></h3>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="ff-table">
+            <thead><tr><th>Trip</th><th>Route</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th></tr></thead>
+            <tbody>
+              {activeDispatches.length === 0 ? (
+                <tr><td colSpan={4} style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>No active dispatches</td></tr>
+              ) : activeDispatches.map(t => (
+                <tr key={t.id}>
+                  <td style={{ fontWeight: 600, color: '#0f172a' }}>{t.trip_code}</td>
+                  <td>{t.origin} → {t.destination}</td>
+                  <td><StatusBadge status={t.status} /></td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                      <button className="btn-primary" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => handleComplete(t.id)}>Complete</button>
+                      <button className="btn-secondary" style={{ fontSize: 12, padding: '6px 12px', color: '#dc2626' }} onClick={() => handleCancel(t.id)}>Cancel</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
