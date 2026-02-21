@@ -4,18 +4,17 @@ const Joi = require('joi');
 // Validation schema for expense creation
 const expenseCreateSchema = Joi.object({
   vehicle_id: Joi.number().required(),
-  description: Joi.string().max(500).required(),
+  trip_id: Joi.number().optional(),
   amount: Joi.number().positive().required(),
   expense_date: Joi.date().required(),
-  expense_type: Joi.string().valid('Maintenance', 'Fuel', 'Insurance', 'Registration', 'Other').optional()
+  expense_type: Joi.string().required()
 });
 
 // Validation schema for expense update
 const expenseUpdateSchema = Joi.object({
-  description: Joi.string().max(500).optional(),
   amount: Joi.number().positive().optional(),
   expense_date: Joi.date().optional(),
-  expense_type: Joi.string().valid('Maintenance', 'Fuel', 'Insurance', 'Registration', 'Other').optional()
+  expense_type: Joi.string().optional()
 });
 
 // GET /api/expenses - Get all expenses
@@ -70,11 +69,10 @@ exports.create = (req, res) => {
   const newExpense = new Expense({
     id: null,
     vehicle_id: value.vehicle_id,
-    description: value.description,
+    trip_id: value.trip_id || null,
     amount: value.amount,
     expense_date: value.expense_date,
-    expense_type: value.expense_type || 'Other',
-    created_at: new Date()
+    expense_type: value.expense_type
   });
 
   Expense.create(newExpense, (err, expense) => {

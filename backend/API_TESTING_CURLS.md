@@ -394,7 +394,7 @@ curl -X POST http://localhost:3000/api/expenses \
   -H "Content-Type: application/json" \
   -d '{
     "vehicle_id": 1,
-    "description": "Tire replacement",
+    "trip_id": 1,
     "amount": 2500,
     "expense_date": "2026-02-21",
     "expense_type": "Maintenance"

@@ -3,11 +3,10 @@ const db = require('../config/database');
 const Expense = function(expense) {
   this.id = expense.id;
   this.vehicle_id = expense.vehicle_id;
-  this.description = expense.description;
+  this.trip_id = expense.trip_id || null;
   this.amount = expense.amount;
   this.expense_date = expense.expense_date;
-  this.expense_type = expense.expense_type || 'Other';
-  this.created_at = new Date();
+  this.expense_type = expense.expense_type;
 };
 
 // Get all expenses
@@ -16,11 +15,10 @@ Expense.getAll = (result) => {
     SELECT 
       e.id,
       e.vehicle_id,
-      e.description,
+      e.trip_id,
       e.amount,
       e.expense_date,
       e.expense_type,
-      e.created_at,
       v.vehicle_code,
       v.license_plate,
       v.model
@@ -45,11 +43,10 @@ Expense.getByVehicleId = (vehicleId, result) => {
     SELECT 
       e.id,
       e.vehicle_id,
-      e.description,
+      e.trip_id,
       e.amount,
       e.expense_date,
       e.expense_type,
-      e.created_at,
       v.vehicle_code,
       v.license_plate,
       v.model
@@ -73,19 +70,18 @@ Expense.getByVehicleId = (vehicleId, result) => {
 Expense.create = (newExpense, result) => {
   const query = `
     INSERT INTO expenses
-    (vehicle_id, description, amount, expense_date, expense_type, created_at)
-    VALUES (?, ?, ?, ?, ?, ?)
+    (vehicle_id, trip_id, amount, expense_date, expense_type)
+    VALUES (?, ?, ?, ?, ?)
   `;
   
   db.query(
     query,
     [
       newExpense.vehicle_id,
-      newExpense.description,
+      newExpense.trip_id || null,
       newExpense.amount,
       newExpense.expense_date,
-      newExpense.expense_type || 'Other',
-      newExpense.created_at
+      newExpense.expense_type
     ],
     (err, res) => {
       if (err) {
@@ -104,11 +100,10 @@ Expense.getById = (id, result) => {
     SELECT 
       e.id,
       e.vehicle_id,
-      e.description,
+      e.trip_id,
       e.amount,
       e.expense_date,
       e.expense_type,
-      e.created_at,
       v.vehicle_code,
       v.license_plate,
       v.model
@@ -133,17 +128,16 @@ Expense.getById = (id, result) => {
 Expense.update = (id, updateData, result) => {
   const query = `
     UPDATE expenses
-    SET description = ?, amount = ?, expense_date = ?, expense_type = ?
+    SET amount = ?, expense_date = ?, expense_type = ?
     WHERE id = ?
   `;
   
   db.query(
     query,
     [
-      updateData.description,
       updateData.amount,
       updateData.expense_date,
-      updateData.expense_type || 'Other',
+      updateData.expense_type,
       id
     ],
     (err, res) => {
