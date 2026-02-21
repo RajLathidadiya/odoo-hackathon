@@ -9,7 +9,8 @@ router.use('/drivers', require('./drivers'));
 router.use('/trips', require('./trips'));
 router.use('/dispatch', require('./dispatch'));
 router.use('/maintenance', require('./maintenance'));
-// router.use('/fuel', require('./fuel'));
+router.use('/fuel', require('./fuel'));
+router.use('/analytics', require('./analytics'));
 // router.use('/expenses', require('./expenses'));
 
 // Sample route
