@@ -17,6 +17,7 @@ import MaintenancePage from './pages/MaintenancePage';
 import FuelPage from './pages/FuelPage';
 import ExpensesPage from './pages/ExpensesPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import UserManagementPage from './pages/UserManagementPage';
 
 export default function App() {
   return (
@@ -112,6 +113,16 @@ export default function App() {
                 element={
                   <ProtectedRoute allowedRoles={['Fleet Manager', 'Super Admin', 'Dispatcher', 'Safety Officer', 'Financial Analyst']}>
                     <AnalyticsPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* User Management - Super Admin only */}
+              <Route
+                path="/user-management"
+                element={
+                  <ProtectedRoute allowedRoles={['Super Admin']}>
+                    <UserManagementPage />
                   </ProtectedRoute>
                 }
               />

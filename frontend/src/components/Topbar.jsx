@@ -13,6 +13,7 @@ const pageTitles = {
   '/fuel': { title: 'Fuel Logs', subtitle: 'Track fuel consumption' },
   '/expenses': { title: 'Expenses', subtitle: 'Operational expense tracking' },
   '/analytics': { title: 'Analytics', subtitle: 'Performance & financial insights' },
+  '/user-management': { title: 'User Management', subtitle: 'Manage users and roles' },
 };
 
 const roleColors = {

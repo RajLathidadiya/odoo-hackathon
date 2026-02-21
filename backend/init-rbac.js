@@ -71,10 +71,9 @@ const displayRoles = (roles) => {
   console.log('─'.repeat(60));
 };
 
-// Step 4: Prompt to create Super Admin user
+// Step 3: Create Default Super Admin user
 const createDefaultSuperAdmin = () => {
   return new Promise((resolve) => {
-    // For automated setup without user interaction, we'll use environment variable
     const INIT_SUPER_ADMIN = process.env.INIT_SUPER_ADMIN === 'true';
     
     if (!INIT_SUPER_ADMIN) {
@@ -82,13 +81,11 @@ const createDefaultSuperAdmin = () => {
       console.log('   INIT_SUPER_ADMIN=true node init-rbac.js\n');
       resolve(false);
     } else {
-      // Create default super admin
       const superAdminEmail = 'superadmin@fleet.com';
       const superAdminPassword = 'SuperAdmin@123';
       
       console.log('\n📝 Creating default Super Admin user...');
       
-      // Check if user already exists
       db.query('SELECT id FROM users WHERE email = ?', [superAdminEmail], (err, res) => {
         if (err) {
           console.error('❌ Database error:', err.message);
@@ -102,7 +99,6 @@ const createDefaultSuperAdmin = () => {
           return;
         }
 
-        // Hash password
         const saltRounds = 10;
         bcrypt.hash(superAdminPassword, saltRounds, (hashErr, hashedPassword) => {
           if (hashErr) {
@@ -111,7 +107,6 @@ const createDefaultSuperAdmin = () => {
             return;
           }
 
-          // Get Super Admin role ID
           db.query('SELECT id FROM roles WHERE name = ?', ['Super Admin'], (roleErr, roleRes) => {
             if (roleErr || !roleRes.length) {
               console.error('❌ Error finding Super Admin role');
@@ -121,7 +116,6 @@ const createDefaultSuperAdmin = () => {
 
             const superAdminRoleId = roleRes[0].id;
 
-            // Create user
             const newUser = {
               role_id: superAdminRoleId,
               full_name: 'System Administrator',
@@ -138,7 +132,6 @@ const createDefaultSuperAdmin = () => {
                 console.log('✅ Default Super Admin user created:');
                 console.log(`   Email: ${superAdminEmail}`);
                 console.log(`   Password: ${superAdminPassword}`);
-                console.log('   ⚠️  Change this password immediately in production!\n');
                 resolve(true);
               }
             });
@@ -146,6 +139,115 @@ const createDefaultSuperAdmin = () => {
         });
       });
     }
+  });
+};
+
+// Step 4: Optionally create test users for each role
+const createTestUsers = () => {
+  return new Promise((resolve) => {
+    const INIT_TEST_USERS = process.env.INIT_TEST_USERS === 'true';
+    
+    if (!INIT_TEST_USERS) {
+      console.log('\n📝 To create test users for each role, set environment variable:');
+      console.log('   INIT_TEST_USERS=true node init-rbac.js\n');
+      resolve(false);
+    } else {
+      createTestUsersSequence(resolve);
+    }
+  });
+};
+
+// Create test users one by one
+const createTestUsersSequence = (resolve) => {
+  console.log('\n📝 Creating test users for each role...');
+
+  const testUsers = [
+    {
+      full_name: 'Fleet Manager User',
+      email: 'manager@fleet.com',
+      password: 'Manager@123',
+      role_name: 'Fleet Manager'
+    },
+    {
+      full_name: 'Dispatcher User',
+      email: 'dispatcher@fleet.com',
+      password: 'Dispatcher@123',
+      role_name: 'Dispatcher'
+    },
+    {
+      full_name: 'Safety Officer User',
+      email: 'safety@fleet.com',
+      password: 'Safety@123',
+      role_name: 'Safety Officer'
+    },
+    {
+      full_name: 'Financial Analyst User',
+      email: 'analyst@fleet.com',
+      password: 'Analyst@123',
+      role_name: 'Financial Analyst'
+    }
+  ];
+
+  let createdCount = 0;
+
+  testUsers.forEach(testUser => {
+    // Get role ID
+    db.query('SELECT id FROM roles WHERE name = ?', [testUser.role_name], (roleErr, roleRes) => {
+      if (roleErr || !roleRes.length) {
+        console.log(`❌ Role not found: ${testUser.role_name}`);
+        return;
+      }
+
+      const roleId = roleRes[0].id;
+
+      // Check if user already exists
+      db.query('SELECT id FROM users WHERE email = ?', [testUser.email], (checkErr, checkRes) => {
+        if (checkErr) {
+          console.log(`❌ Error checking user ${testUser.email}`);
+          return;
+        }
+
+        if (checkRes.length > 0) {
+          console.log(`ℹ️  User already exists: ${testUser.email} (${testUser.role_name})`);
+          createdCount++;
+          if (createdCount === testUsers.length) {
+            resolve(true);
+          }
+          return;
+        }
+
+        // Hash password
+        const saltRounds = 10;
+        bcrypt.hash(testUser.password, saltRounds, (hashErr, hashedPassword) => {
+          if (hashErr) {
+            console.log(`❌ Error hashing password for ${testUser.email}`);
+            return;
+          }
+
+          // Create user
+          const newUser = {
+            role_id: roleId,
+            full_name: testUser.full_name,
+            email: testUser.email,
+            password_hash: hashedPassword,
+            is_active: true
+          };
+
+          db.query('INSERT INTO users SET ?', newUser, (insertErr) => {
+            if (insertErr) {
+              console.log(`❌ Error creating user ${testUser.email}`);
+            } else {
+              console.log(`✅ Created: ${testUser.email} (${testUser.role_name})`);
+              console.log(`   Password: ${testUser.password}`);
+            }
+            createdCount++;
+            if (createdCount === testUsers.length) {
+              resolve(true);
+            }
+          });
+        });
+      });
+    });
   });
 };
 
@@ -159,14 +261,27 @@ const main = async () => {
     const roles = await getAllRoles();
     displayRoles(roles);
 
-    // Step 3: Optional - Create default Super Admin user
-    const userCreated = await createDefaultSuperAdmin();
+    // Step 3: Create default Super Admin user
+    await createDefaultSuperAdmin();
+
+    // Step 4: Create test users for each role
+    await createTestUsers();
 
     // Summary
     console.log('\n✅ RBAC Initialization Complete!\n');
-    console.log('Next Steps:');
+    console.log('Test Users Created:');
+    console.log('─'.repeat(60));
+    console.log('Email                    | Password         | Role');
+    console.log('─'.repeat(60));
+    console.log('superadmin@fleet.com     | SuperAdmin@123   | Super Admin');
+    console.log('manager@fleet.com        | Manager@123      | Fleet Manager');
+    console.log('dispatcher@fleet.com     | Dispatcher@123   | Dispatcher');
+    console.log('safety@fleet.com         | Safety@123       | Safety Officer');
+    console.log('analyst@fleet.com        | Analyst@123      | Financial Analyst');
+    console.log('─'.repeat(60));
+    console.log('\nNext Steps:');
     console.log('1. Start your server: npm start');
-    console.log('2. Login with a test user to verify RBAC is working');
+    console.log('2. Login with any test user above');
     console.log('3. Check RBAC_SETUP.md for detailed documentation\n');
 
     process.exit(0);

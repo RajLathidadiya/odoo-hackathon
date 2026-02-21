@@ -16,7 +16,7 @@ const allNavItems = [
   { path: '/fuel', icon: Fuel, label: 'Fuel', color: '#0891b2', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst'] },
   { path: '/expenses', icon: Receipt, label: 'Expenses', color: '#dc2626', roles: ['Super Admin', 'Fleet Manager', 'Financial Analyst'] },
   { path: '/analytics', icon: BarChart3, label: 'Analytics', color: '#4f46e5', roles: ['Super Admin', 'Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst'] },
-  { path: '/users', icon: Settings, label: 'Users', color: '#f59e0b', roles: ['Super Admin'] },
+  { path: '/user-management', icon: Settings, label: 'User Management', color: '#f59e0b', roles: ['Super Admin'] },
 ];
 
 export default function Sidebar({ collapsed, setCollapsed }) {
