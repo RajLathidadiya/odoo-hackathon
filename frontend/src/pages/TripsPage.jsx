@@ -151,11 +151,13 @@ export default function TripsPage() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Cargo Weight (kg) *</label>
-              <input className="ff-input" type="number" {...register('cargo_weight_kg', { required: 'Required' })} placeholder="1000" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              <input className="ff-input" type="number" min="0" {...register('cargo_weight_kg', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="1000" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              {errors.cargo_weight_kg && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.cargo_weight_kg.message}</p>}
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Revenue (₹) *</label>
-              <input className="ff-input" type="number" {...register('revenue', { required: 'Required' })} placeholder="15000" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              <input className="ff-input" type="number" min="0" {...register('revenue', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="15000" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              {errors.revenue && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.revenue.message}</p>}
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'clamp(8px, 2vw, 10px)', marginTop: 'clamp(16px, 3vw, 22px)', flexWrap: 'wrap' }}>

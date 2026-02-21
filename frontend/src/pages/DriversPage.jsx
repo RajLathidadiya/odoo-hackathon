@@ -170,7 +170,7 @@ export default function DriversPage() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>License Expiry *</label>
-              <input className="ff-input" type="date" {...register('license_expiry', { required: 'Required' })} />
+              <input className="ff-input" type="date" min={new Date().toISOString().split('T')[0]} {...register('license_expiry', { required: 'Required', validate: value => new Date(value) > new Date() || 'Date must be in the future' })} />
               {errors.license_expiry && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.license_expiry.message}</p>}
             </div>
             <div>

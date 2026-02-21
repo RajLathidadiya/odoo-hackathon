@@ -101,7 +101,7 @@ export default function MaintenancePage() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Cost (₹) *</label>
-              <input className="ff-input" type="number" {...register('cost', { required: 'Required' })} placeholder="5000" />
+              <input className="ff-input" type="number" min="0" {...register('cost', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="5000" />
               {errors.cost && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.cost.message}</p>}
             </div>
             <div>

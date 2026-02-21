@@ -103,7 +103,8 @@ export default function ExpensesPage() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Amount (₹) *</label>
-              <input className="ff-input" type="number" {...register('amount', { required: 'Required' })} placeholder="5000" />
+              <input className="ff-input" type="number" min="0" {...register('amount', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="5000" />
+              {errors.amount && <p style={{ color: '#dc2626', fontSize: 'clamp(10px, 1.5vw, 11px)', margin: '4px 0 0' }}>{errors.amount.message}</p>}
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Date *</label>

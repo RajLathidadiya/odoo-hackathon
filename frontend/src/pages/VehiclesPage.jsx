@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 
 const vehicleTypes = ['Truck', 'Van', 'Bike'];
 const vehicleStatuses = ['Available', 'On Trip', 'In Shop', 'Out of Service'];
+const vehicleRegions = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Chandigarh', 'Indore'];
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState([]);
@@ -168,47 +169,54 @@ export default function VehiclesPage() {
 
       <Modal isOpen={modalOpen} onClose={closeModal} title={editVehicle ? 'Edit Vehicle' : 'Add Vehicle'}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'clamp(10px, 3vw, 14px)' }}>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle Code *</label>
-              <input className="ff-input" {...register('vehicle_code', { required: 'Required' })} placeholder="VH-001" />
-              {errors.vehicle_code && <p style={{ fontSize: 11, color: '#dc2626', marginTop: 2 }}>{errors.vehicle_code.message}</p>}
+              <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle Code *</label>
+              <input className="ff-input" {...register('vehicle_code', { required: 'Required' })} placeholder="VH-001" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              {errors.vehicle_code && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.vehicle_code.message}</p>}
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>License Plate *</label>
-              <input className="ff-input" {...register('license_plate', { required: 'Required' })} placeholder="MH-12-AB-1234" />
-              {errors.license_plate && <p style={{ fontSize: 11, color: '#dc2626', marginTop: 2 }}>{errors.license_plate.message}</p>}
+              <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>License Plate *</label>
+              <input className="ff-input" {...register('license_plate', { required: 'Required' })} placeholder="MH-12-AB-1234" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              {errors.license_plate && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.license_plate.message}</p>}
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle Type *</label>
-              <select className="ff-select" style={{ width: '100%' }} {...register('vehicle_type', { required: 'Required' })}>
+              <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle Type *</label>
+              <select className="ff-select" style={{ width: '100%', fontSize: 'clamp(12px, 2vw, 13px)' }} {...register('vehicle_type', { required: 'Required' })}>
                 {vehicleTypes.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Model *</label>
-              <input className="ff-input" {...register('model', { required: 'Required' })} placeholder="Tata Ace" />
+              <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Model *</label>
+              <input className="ff-input" {...register('model', { required: 'Required' })} placeholder="Tata Ace" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Max Capacity (kg) *</label>
-              <input className="ff-input" type="number" {...register('max_capacity_kg', { required: 'Required' })} placeholder="5000" />
+              <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Max Capacity (kg) *</label>
+              <input className="ff-input" type="number" min="0" {...register('max_capacity_kg', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="5000" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              {errors.max_capacity_kg && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.max_capacity_kg.message}</p>}
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Acquisition Cost *</label>
-              <input className="ff-input" type="number" {...register('acquisition_cost', { required: 'Required' })} placeholder="500000" />
+              <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Acquisition Cost *</label>
+              <input className="ff-input" type="number" min="0" {...register('acquisition_cost', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="500000" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              {errors.acquisition_cost && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.acquisition_cost.message}</p>}
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Odometer (km) *</label>
-              <input className="ff-input" type="number" {...register('odometer_km', { required: 'Required' })} placeholder="0" />
+              <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Odometer (km) *</label>
+              <input className="ff-input" type="number" min="0" {...register('odometer_km', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="0" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              {errors.odometer_km && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.odometer_km.message}</p>}
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Region *</label>
-              <input className="ff-input" {...register('region', { required: 'Required' })} placeholder="Mumbai" />
+              <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Region *</label>
+              <input className="ff-input" list="regionList" {...register('region', { required: 'Required' })} placeholder="Type or select region" style={{ fontSize: 'clamp(12px, 2vw, 13px)' }} />
+              <datalist id="regionList">
+                {vehicleRegions.map(r => <option key={r} value={r}>{r}</option>)}
+              </datalist>
+              {errors.region && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.region.message}</p>}
             </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 22 }}>
-            <button type="button" className="btn-secondary" onClick={closeModal}>Cancel</button>
-            <button type="submit" className="btn-primary">{editVehicle ? 'Save Changes' : 'Add Vehicle'}</button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'clamp(8px, 2vw, 10px)', marginTop: 'clamp(16px, 3vw, 22px)', flexWrap: 'wrap' }}>
+            <button type="button" className="btn-secondary" onClick={closeModal} style={{ fontSize: 'clamp(12px, 2vw, 14px)', padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px)' }}>Cancel</button>
+            <button type="submit" className="btn-primary" style={{ fontSize: 'clamp(12px, 2vw, 14px)', padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px)' }}>{editVehicle ? 'Save Changes' : 'Add Vehicle'}</button>
           </div>
         </form>
       </Modal>
