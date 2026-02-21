@@ -3,11 +3,12 @@ const router = express.Router();
 
 // Import route modules
 router.use('/auth', require('./auth'));
-// router.use('/users', require('./users'));
-// router.use('/vehicles', require('./vehicles'));
-// router.use('/drivers', require('./drivers'));
-// router.use('/trips', require('./trips'));
-// router.use('/maintenance', require('./maintenance'));
+router.use('/roles', require('./roles'));
+router.use('/vehicles', require('./vehicles'));
+router.use('/drivers', require('./drivers'));
+router.use('/trips', require('./trips'));
+router.use('/dispatch', require('./dispatch'));
+router.use('/maintenance', require('./maintenance'));
 // router.use('/fuel', require('./fuel'));
 // router.use('/expenses', require('./expenses'));
 
