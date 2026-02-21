@@ -53,33 +53,33 @@ export default function DispatchPage() {
   if (loading) return <PageLoader />;
 
   return (
-    <div className="anim-fade-up" style={{ maxWidth: 1200 }}>
+    <div className="anim-fade-up" style={{ width: '100%', padding: 'clamp(12px, 4vw, 24px)' }}>
       {/* Assign Form */}
-      <div className="ff-card" style={{ marginBottom: 24 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: '0 0 16px' }}>Assign Trip</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 12, alignItems: 'end' }}>
+      <div className="ff-card" style={{ marginBottom: 'clamp(14px, 3vw, 20px)' }}>
+        <h3 style={{ fontSize: 'clamp(13px, 3vw, 15px)', fontWeight: 700, color: '#0f172a', margin: '0 0 clamp(10px, 2.5vw, 14px)' }}>Assign Trip</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(140px, 40vw, 180px), 1fr))', gap: 'clamp(10px, 2.5vw, 14px)', alignItems: 'end' }}>
           <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Trip (Draft)</label>
-            <select className="ff-select" style={{ width: '100%' }} value={form.trip_id} onChange={e => setForm({ ...form, trip_id: e.target.value })}>
+            <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Trip (Draft)</label>
+            <select className="ff-select" style={{ width: '100%', fontSize: 'clamp(12px, 2vw, 13px)' }} value={form.trip_id} onChange={e => setForm({ ...form, trip_id: e.target.value })}>
               <option value="">Select trip</option>
               {draftTrips.map(t => <option key={t.id} value={t.id}>{t.trip_code} — {t.origin} → {t.destination}</option>)}
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle (Available)</label>
-            <select className="ff-select" style={{ width: '100%' }} value={form.vehicle_id} onChange={e => setForm({ ...form, vehicle_id: e.target.value })}>
+            <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Vehicle (Available)</label>
+            <select className="ff-select" style={{ width: '100%', fontSize: 'clamp(12px, 2vw, 13px)' }} value={form.vehicle_id} onChange={e => setForm({ ...form, vehicle_id: e.target.value })}>
               <option value="">Select vehicle</option>
               {availableVehicles.map(v => <option key={v.id} value={v.id}>{v.vehicle_code} ({v.max_capacity_kg}kg)</option>)}
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Driver (Available)</label>
-            <select className="ff-select" style={{ width: '100%' }} value={form.driver_id} onChange={e => setForm({ ...form, driver_id: e.target.value })}>
+            <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Driver (Available)</label>
+            <select className="ff-select" style={{ width: '100%', fontSize: 'clamp(12px, 2vw, 13px)' }} value={form.driver_id} onChange={e => setForm({ ...form, driver_id: e.target.value })}>
               <option value="">Select driver</option>
               {availableDrivers.map(d => <option key={d.id} value={d.id}>{d.full_name}</option>)}
             </select>
           </div>
-          <button className="btn-primary" onClick={handleAssign} disabled={submitting} style={{ whiteSpace: 'nowrap' }}>
+          <button className="btn-primary" onClick={handleAssign} disabled={submitting} style={{ whiteSpace: 'nowrap', fontSize: 'clamp(12px, 2vw, 14px)', padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px)' }}>
             {submitting ? 'Assigning...' : 'Dispatch'}
           </button>
         </div>
@@ -87,24 +87,24 @@ export default function DispatchPage() {
 
       {/* Active Dispatches */}
       <div className="ff-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '18px 24px', borderBottom: '1px solid #f1f5f9' }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Active Dispatches <span className="badge badge-blue" style={{ marginLeft: 8 }}>{activeDispatches.length}</span></h3>
+        <div style={{ padding: 'clamp(12px, 3vw, 18px)', borderBottom: '1px solid #f1f5f9' }}>
+          <h3 style={{ fontSize: 'clamp(13px, 3vw, 15px)', fontWeight: 700, color: '#0f172a', margin: 0 }}>Active Dispatches <span className="badge badge-blue" style={{ marginLeft: 8, fontSize: 'clamp(10px, 2vw, 11px)' }}>{activeDispatches.length}</span></h3>
         </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="ff-table">
-            <thead><tr><th>Trip</th><th>Route</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th></tr></thead>
+        <div style={{ overflowX: 'auto', fontSize: 'clamp(11px, 2vw, 13px)' }}>
+          <table className="ff-table" style={{ fontSize: 'clamp(11px, 2vw, 13px)' }}>
+            <thead><tr style={{ fontSize: 'clamp(11px, 1.8vw, 12px)' }}><th>Trip</th><th>Route</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th></tr></thead>
             <tbody>
               {activeDispatches.length === 0 ? (
-                <tr><td colSpan={4} style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>No active dispatches</td></tr>
+                <tr><td colSpan={4} style={{ textAlign: 'center', padding: 'clamp(24px, 5vw, 40px)', color: '#94a3b8', fontSize: 'clamp(12px, 2vw, 13px)' }}>No active dispatches</td></tr>
               ) : activeDispatches.map(t => (
                 <tr key={t.id}>
                   <td style={{ fontWeight: 600, color: '#0f172a' }}>{t.trip_code}</td>
                   <td>{t.origin} → {t.destination}</td>
                   <td><StatusBadge status={t.status} /></td>
                   <td style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                      <button className="btn-primary" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => handleComplete(t.id)}>Complete</button>
-                      <button className="btn-secondary" style={{ fontSize: 12, padding: '6px 12px', color: '#dc2626' }} onClick={() => handleCancel(t.id)}>Cancel</button>
+                    <div style={{ display: 'flex', gap: 'clamp(6px, 1.5vw, 8px)', justifyContent: 'flex-end', flexWrap: 'wrap', rowGap: '4px' }}>
+                      <button className="btn-primary" style={{ fontSize: 'clamp(10px, 2vw, 12px)', padding: 'clamp(5px, 1.5vw, 8px) clamp(8px, 2vw, 12px)' }} onClick={() => handleComplete(t.id)}>Complete</button>
+                      <button className="btn-secondary" style={{ fontSize: 'clamp(10px, 2vw, 12px)', padding: 'clamp(5px, 1.5vw, 8px) clamp(8px, 2vw, 12px)', color: '#dc2626' }} onClick={() => handleCancel(t.id)}>Cancel</button>
                     </div>
                   </td>
                 </tr>

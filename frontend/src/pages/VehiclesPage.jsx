@@ -89,28 +89,28 @@ export default function VehiclesPage() {
   if (loading) return <PageLoader />;
 
   return (
-    <div className="anim-fade-up" style={{ maxWidth: 1200 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <span className="badge badge-gray">{filtered.length} vehicles</span>
-        <button className="btn-primary" onClick={openAdd}><Plus size={15} /> Add Vehicle</button>
+    <div className="anim-fade-up" style={{ width: '100%', padding: 'clamp(12px, 4vw, 24px)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'clamp(12px, 3vw, 18px)', flexWrap: 'wrap', gap: '10px' }}>
+        <span className="badge badge-gray" style={{ fontSize: 'clamp(11px, 2vw, 12px)' }}>{filtered.length} vehicles</span>
+        <button className="btn-primary" onClick={openAdd} style={{ fontSize: 'clamp(12px, 2.5vw, 14px)', padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px)', gap: '6px' }}><Plus size={14} /> Add Vehicle</button>
       </div>
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: '1 1 240px' }}>
-          <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-          <input className="ff-input" style={{ paddingLeft: 34 }} placeholder="Search vehicles..." value={search} onChange={e => setSearch(e.target.value)} />
+      <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)', marginBottom: 'clamp(12px, 2vw, 16px)', flexWrap: 'wrap' }}>
+        <div style={{ position: 'relative', flex: '1 1 200px' }}>
+          <Search size={13} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <input className="ff-input" style={{ paddingLeft: 34, fontSize: 'clamp(12px, 2vw, 13px)' }} placeholder="Search vehicles..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-        <select className="ff-select" style={{ width: 160 }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+        <select className="ff-select" style={{ minWidth: 'clamp(140px, 30vw, 160px)', fontSize: 'clamp(12px, 2vw, 13px)' }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
           <option value="">All Statuses</option>
           {vehicleStatuses.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
-        {(search || statusFilter) && <button className="btn-secondary" onClick={() => { setSearch(''); setStatusFilter(''); }}>Clear</button>}
+        {(search || statusFilter) && <button className="btn-secondary" onClick={() => { setSearch(''); setStatusFilter(''); }} style={{ fontSize: 'clamp(12px, 2vw, 13px)', padding: 'clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px)' }}>Clear</button>}
       </div>
 
       <div className="ff-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="ff-table">
-            <thead><tr>
+        <div style={{ overflowX: 'auto', fontSize: 'clamp(11px, 2vw, 13px)' }}>
+          <table className="ff-table" style={{ fontSize: 'clamp(11px, 2vw, 13px)' }}>
+            <thead><tr style={{ fontSize: 'clamp(11px, 1.8vw, 12px)' }}>
               <th>Vehicle</th><th>Plate</th><th>Type</th><th>Region</th><th>Capacity</th><th>Odometer</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th>
             </tr></thead>
             <tbody>
@@ -119,13 +119,13 @@ export default function VehiclesPage() {
               ) : filtered.map(v => (
                 <tr key={v.id}>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 34, height: 34, borderRadius: 10, background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#4f46e5', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px, 2vw, 10px)' }}>
+                      <div style={{ width: 'clamp(28px, 6vw, 34px)', height: 'clamp(28px, 6vw, 34px)', borderRadius: 8, background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'clamp(10px, 1.5vw, 12px)', fontWeight: 700, color: '#4f46e5', flexShrink: 0 }}>
                         {v.vehicle_code?.substring(0, 2) || 'V'}
                       </div>
                       <div>
-                        <p style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', margin: 0 }}>{v.vehicle_code}</p>
-                        <p style={{ fontSize: 11, color: '#94a3b8', margin: 0 }}>{v.model || '—'}</p>
+                        <p style={{ fontSize: 'clamp(11px, 2vw, 13px)', fontWeight: 600, color: '#0f172a', margin: 0 }}>{v.vehicle_code}</p>
+                        <p style={{ fontSize: 'clamp(10px, 1.8vw, 11px)', color: '#94a3b8', margin: '2px 0 0' }}>{v.model || '—'}</p>
                       </div>
                     </div>
                   </td>
@@ -138,10 +138,10 @@ export default function VehiclesPage() {
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ position: 'relative', display: 'inline-block' }}>
                       <button onClick={() => setActionMenu(actionMenu === v.id ? null : v.id)}
-                        style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
+                        style={{ width: 'clamp(28px, 5vw, 32px)', height: 'clamp(28px, 5vw, 32px)', borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
                         onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'}
                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                        <MoreHorizontal size={16} />
+                        <MoreHorizontal size={14} />
                       </button>
                       {actionMenu === v.id && (
                         <div className="anim-scale-in" style={{ position: 'absolute', right: 0, top: '100%', marginTop: 4, background: '#fff', borderRadius: 12, border: '1px solid #f1f5f9', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', minWidth: 140, zIndex: 10, overflow: 'hidden' }}>

@@ -48,40 +48,40 @@ export default function AnalyticsPage() {
   const fuelRows = Array.isArray(fuelData?.vehicles || fuelData) ? (fuelData?.vehicles || fuelData) : [];
 
   return (
-    <div className="anim-fade-up" style={{ maxWidth: 1200 }}>
+    <div className="anim-fade-up" style={{ width: '100%', padding: 'clamp(12px, 4vw, 24px)' }}>
       {/* Summary Cards */}
-      <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 28 }}>
+      <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(160px, 35vw, 220px), 1fr))', gap: 'clamp(10px, 2vw, 16px)', marginBottom: 'clamp(12px, 3vw, 20px)' }}>
         {summaryCards.map(({ label, value, icon: Icon, bg, color }) => (
-          <div key={label} className="ff-card anim-fade-up" style={{ padding: '20px 22px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon size={18} color={color} />
+          <div key={label} className="ff-card anim-fade-up" style={{ padding: 'clamp(14px, 3vw, 22px)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(10px, 2vw, 12px)', marginBottom: 'clamp(10px, 2vw, 12px)' }}>
+              <div style={{ width: 'clamp(34px, 8vw, 40px)', height: 'clamp(34px, 8vw, 40px)', borderRadius: 10, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon size={16} color={color} />
               </div>
-              <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>{label}</span>
+              <span style={{ fontSize: 'clamp(11px, 2vw, 12px)', color: '#94a3b8', fontWeight: 500 }}>{label}</span>
             </div>
-            <p style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', margin: 0 }}>{value}</p>
+            <p style={{ fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: 700, color: '#0f172a', margin: 0 }}>{value}</p>
           </div>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'clamp(12px, 3vw, 20px)' }}>
         {/* Financial Summary */}
         <div className="ff-card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ padding: '18px 24px', borderBottom: '1px solid #f8fafc' }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Financial Summary</h3>
+          <div style={{ padding: 'clamp(12px, 3vw, 18px)', borderBottom: '1px solid #f8fafc' }}>
+            <h3 style={{ fontSize: 'clamp(13px, 3vw, 15px)', fontWeight: 700, color: '#0f172a', margin: 0 }}>Financial Summary</h3>
           </div>
-          <div style={{ padding: '12px 0' }}>
+          <div style={{ padding: 'clamp(8px, 2vw, 12px) 0' }}>
             {finRows.length === 0 ? (
-              <p style={{ padding: '20px 24px', color: '#94a3b8', fontSize: 13 }}>No financial data available</p>
+              <p style={{ padding: 'clamp(14px, 3vw, 20px)', color: '#94a3b8', fontSize: 'clamp(12px, 2vw, 13px)' }}>No financial data available</p>
             ) : finRows.map((row, i) => (
               <div key={i} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '10px 24px', transition: 'background 0.15s',
+                padding: 'clamp(8px, 1.5vw, 10px) clamp(12px, 3vw, 18px)', transition: 'background 0.15s',
               }}
                 onMouseEnter={e => e.currentTarget.style.background = '#fafbfd'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                <span style={{ fontSize: 13, color: row.bold ? '#0f172a' : '#64748b', fontWeight: row.bold ? 700 : 400 }}>{row.label}</span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: row.bold ? '#4f46e5' : '#0f172a' }}>{row.value}</span>
+                <span style={{ fontSize: 'clamp(11px, 2vw, 13px)', color: row.bold ? '#0f172a' : '#64748b', fontWeight: row.bold ? 700 : 400 }}>{row.label}</span>
+                <span style={{ fontSize: 'clamp(11px, 2vw, 13px)', fontWeight: 600, color: row.bold ? '#4f46e5' : '#0f172a' }}>{row.value}</span>
               </div>
             ))}
           </div>
@@ -89,15 +89,15 @@ export default function AnalyticsPage() {
 
         {/* Fuel Efficiency */}
         <div className="ff-card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ padding: '18px 24px', borderBottom: '1px solid #f8fafc' }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Fuel Efficiency by Vehicle</h3>
+          <div style={{ padding: 'clamp(12px, 3vw, 18px)', borderBottom: '1px solid #f8fafc' }}>
+            <h3 style={{ fontSize: 'clamp(13px, 3vw, 15px)', fontWeight: 700, color: '#0f172a', margin: 0 }}>Fuel Efficiency by Vehicle</h3>
           </div>
           {fuelRows.length === 0 ? (
-            <p style={{ padding: '20px 24px', color: '#94a3b8', fontSize: 13 }}>No fuel data available</p>
+            <p style={{ padding: 'clamp(14px, 3vw, 20px)', color: '#94a3b8', fontSize: 'clamp(12px, 2vw, 13px)' }}>No fuel data available</p>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="ff-table">
-                <thead><tr><th>Vehicle</th><th>Avg km/L</th><th>Total Fuel (L)</th></tr></thead>
+            <div style={{ overflowX: 'auto', fontSize: 'clamp(11px, 2vw, 13px)' }}>
+              <table className="ff-table" style={{ fontSize: 'clamp(11px, 2vw, 13px)' }}>
+                <thead><tr style={{ fontSize: 'clamp(11px, 1.8vw, 12px)' }}><th>Vehicle</th><th>Avg km/L</th><th>Total Fuel (L)</th></tr></thead>
                 <tbody>
                   {fuelRows.slice(0, 10).map((v, i) => (
                     <tr key={i}>

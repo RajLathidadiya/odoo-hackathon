@@ -65,26 +65,23 @@ export default function DashboardPage() {
       {/* KPI Cards */}
       <div className="stagger" style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-        gap: 'clamp(12px, 3vw, 20px)',
-        marginBottom: 'clamp(20px, 5vw, 28px)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(150px, 30vw, 180px), 1fr))',
+        gap: 'clamp(10px, 2vw, 16px)',
+        marginBottom: 'clamp(12px, 3vw, 18px)',
         width: '100%',
       }}>
         {kpis.map(({ key, label, icon: Icon, color, bg, currency }) => (
           <div key={key} className="ff-card anim-fade-up" style={{ padding: 'clamp(16px, 4vw, 22px)', cursor: 'default' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 12,
-                background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Icon size={18} color={color} />
-              </div>
-              <span style={{ fontSize: 'clamp(10px, 2vw, 11px)', color: '#94a3b8', fontWeight: 500 }}></span>
+            <div style={{
+              width: 'clamp(32px, 8vw, 40px)', height: 'clamp(32px, 8vw, 40px)', borderRadius: 12,
+              background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'clamp(10px, 2.5vw, 14px)',
+            }}>
+              <Icon size={16} color={color} />
             </div>
-            <p style={{ fontSize: 'clamp(18px, 5vw, 22px)', fontWeight: 800, color: '#0f172a', margin: '0 0 2px', lineHeight: 1 }}>
+            <p style={{ fontSize: 'clamp(16px, 4vw, 20px)', fontWeight: 700, color: '#0f172a', margin: '0 0 4px', lineHeight: 1.2 }}>
               {fmt(get(key), currency)}
             </p>
-            <p style={{ fontSize: 'clamp(11px, 2.5vw, 12px)', color: '#94a3b8', margin: 0, fontWeight: 500 }}>{label}</p>
+            <p style={{ fontSize: 'clamp(10px, 2vw, 11px)', color: '#94a3b8', margin: 0, fontWeight: 500 }}>{label}</p>
           </div>
         ))}
       </div>
@@ -92,13 +89,12 @@ export default function DashboardPage() {
       {/* Quick Links */}
       <div className="ff-card" style={{ padding: 0, overflow: 'hidden', width: '100%' }}>
         <div style={{
-          padding: 'clamp(14px, 4vw, 24px)',
+          padding: 'clamp(12px, 3vw, 18px)',
           borderBottom: '1px solid #f8fafc',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '10px',
+          gap: 'clamp(8px, 2vw, 12px)',
         }}>
-          <h3 style={{ fontSize: 'clamp(14px, 3vw, 15px)', fontWeight: 700, color: '#0f172a', margin: 0 }}>Quick Actions</h3>
+          <h3 style={{ fontSize: 'clamp(13px, 3vw, 15px)', fontWeight: 700, color: '#0f172a', margin: 0 }}>Quick Actions</h3>
           <span className="badge badge-gray">{quickLinks.length}</span>
         </div>
         {quickLinks.map((item, i) => (
@@ -107,21 +103,21 @@ export default function DashboardPage() {
             to={item.to}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: 'clamp(12px, 3vw, 16px) clamp(14px, 4vw, 24px)',
+              padding: 'clamp(10px, 2.5vw, 14px) clamp(12px, 3vw, 20px)',
               borderBottom: i < quickLinks.length - 1 ? '1px solid #fafbfc' : 'none',
               textDecoration: 'none',
               transition: 'background 0.15s',
-              flexWrap: 'wrap',
-              gap: '10px',
+              gap: 'clamp(8px, 2vw, 12px)',
+              minHeight: 'auto',
             }}
             onMouseEnter={e => e.currentTarget.style.background = '#fafbfd'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(10px, 2vw, 14px)', flex: 1, minWidth: 0 }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(10px, 2vw, 12px)', flex: 1, minWidth: 0 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
               <div style={{ minWidth: 0 }}>
-                <p style={{ fontSize: 'clamp(12px, 2.5vw, 13px)', fontWeight: 600, color: '#0f172a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</p>
-                <p style={{ fontSize: 'clamp(11px, 2vw, 12px)', color: '#94a3b8', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.desc}</p>
+                <p style={{ fontSize: 'clamp(11px, 2.2vw, 12px)', fontWeight: 600, color: '#0f172a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</p>
+                <p style={{ fontSize: 'clamp(10px, 1.8vw, 11px)', color: '#94a3b8', margin: '1px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.desc}</p>
               </div>
             </div>
             <ArrowRight size={14} color="#cbd5e1" style={{ flexShrink: 0 }} />
