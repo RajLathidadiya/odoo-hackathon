@@ -1,209 +1,217 @@
-🚛 FleetFlow
-Modular Fleet & Logistics Management System
+# 🚛 FleetFlow
 
-FleetFlow is a centralized, rule-based digital fleet management system designed to replace inefficient manual logbooks. It optimizes vehicle lifecycle management, driver safety monitoring, trip dispatching, and financial performance tracking.
+## Modular Fleet & Logistics Management System
 
-🎯 Objective
+FleetFlow is a centralized, rule-based fleet management system built to replace inefficient manual logbooks with a scalable digital platform. It helps organizations manage vehicle lifecycle, monitor driver compliance, track operational costs, and generate data-driven insights.
 
-To build a structured logistics hub that:
+> Built using **React (Frontend)** and **Node.js + Express (Backend)**.
 
-Optimizes delivery fleet operations
+---
 
-Ensures driver compliance & safety
+## 🎯 Objective
 
-Tracks maintenance & fuel expenses
+To optimize delivery fleet operations by:
 
-Provides actionable analytics & ROI insights
+* Managing vehicle availability & lifecycle
+* Monitoring driver safety & license compliance
+* Automating dispatch validation rules
+* Tracking fuel & maintenance expenses
+* Generating operational analytics & ROI reports
 
-🛠 Tech Stack
+---
 
-Frontend
+## 🛠 Tech Stack
 
-React
+### Frontend
 
-Modular Component Architecture
+* React
+* Modular component architecture
+* Role-based UI rendering
+* Dynamic data tables with filters
 
-Role-Based UI
+### Backend
 
-Data Tables with Filters
+* Node.js
+* Express.js
+* RESTful API architecture
+* Business logic validation layer
 
-Backend
+### Database
 
-Node.js
+* Relational database
+* Structured linking between:
 
-Express.js
+  * Vehicles
+  * Drivers
+  * Trips
+  * Maintenance Logs
+  * Fuel & Expense Records
 
-RESTful APIs
+---
 
-Real-time state updates (vehicle/driver availability)
+## 👥 Target Users
 
-Database
+* **Fleet Managers** – Vehicle health, lifecycle, scheduling
+* **Dispatchers** – Trip creation & driver assignment
+* **Safety Officers** – License tracking & safety monitoring
+* **Financial Analysts** – Fuel spend, ROI, operational cost tracking
 
-Relational Database (Trips, Vehicles, Drivers, Expenses linked via IDs)
+---
 
-👥 Target Users
+## 🖥 Core Modules
 
-Fleet Managers – Monitor vehicles, lifecycle, and utilization
+### 1️⃣ Authentication & RBAC
 
-Dispatchers – Assign drivers & vehicles, manage trips
+* Secure login system
+* Role-Based Access Control
+* Protected routes
 
-Safety Officers – Track compliance and license validity
+---
 
-Financial Analysts – Monitor cost, ROI, fuel efficiency
+### 2️⃣ Command Center Dashboard
 
-🖥 Core System Modules
-🔐 1. Authentication & RBAC
+Provides high-level KPIs:
 
-Secure login system
+* Active Fleet (On Trip)
+* Maintenance Alerts (In Shop)
+* Fleet Utilization Rate
+* Pending Cargo
+* Filters by vehicle type, region, and status
 
-Role-Based Access Control
+---
 
-Manager / Dispatcher / Safety / Finance roles
+### 3️⃣ Vehicle Registry (Asset Management)
 
-📊 2. Command Center (Dashboard)
+* Add / Edit / Delete vehicles
+* License Plate as unique identifier
+* Max Load Capacity validation
+* Odometer tracking
+* Manual “Out of Service” toggle
 
-High-level fleet overview with KPIs:
+---
 
-Active Fleet (On Trip)
+### 4️⃣ Trip Dispatcher
 
-Maintenance Alerts
+* Create trips by assigning:
 
-Fleet Utilization %
+  * Available vehicle
+  * Available driver
+* Validation Rule:
 
-Pending Cargo
+  * Prevent trip if `CargoWeight > MaxCapacity`
+* Trip Lifecycle:
 
-Filters by vehicle type, region, status
+  * Draft → Dispatched → Completed → Cancelled
+* Auto status updates for vehicle & driver
 
-🚚 3. Vehicle Registry
+---
 
-Asset management with:
+### 5️⃣ Maintenance & Service Logs
 
-CRUD operations
+* Log maintenance entries
+* Automatic status change to "In Shop"
+* Removes vehicle from dispatch pool
 
-License Plate (Unique ID)
+---
 
-Load Capacity
+### 6️⃣ Fuel & Expense Logging
 
-Odometer Tracking
+* Record fuel liters & cost
+* Track maintenance expenses
+* Automatic calculation:
 
-Manual "Out of Service" toggle
-
-📦 4. Trip Dispatcher & Management
-
-Trip lifecycle:
-
-Draft → Dispatched → Completed → Cancelled
-
-Validation rule:
-
-Prevent trip creation if CargoWeight > MaxCapacity
-
-Auto status updates:
-
-Vehicle → On Trip
-
-Driver → On Duty
-
-🔧 5. Maintenance & Service Logs
-
-Add service entries (Oil change, repairs, etc.)
-
-Auto logic:
-
-Vehicle status → "In Shop"
-
-Removed from dispatcher selection
-
-⛽ 6. Fuel & Expense Logging
-
-Record:
-
-Liters
-
-Cost
-
-Date
-
-Auto calculation:
-
+```
 Total Operational Cost = Fuel + Maintenance
-👨‍✈️ 7. Driver Performance & Safety
+```
 
-License expiry validation (blocks assignment if expired)
+---
 
-Safety Score
+### 7️⃣ Driver Performance & Safety
 
-Trip completion rate
+* License expiry validation (blocks assignment if expired)
+* Safety score tracking
+* Trip completion metrics
+* Status toggle:
 
-Status:
+  * On Duty
+  * Off Duty
+  * Suspended
 
-On Duty
+---
 
-Off Duty
+### 8️⃣ Operational Analytics
 
-Suspended
+* Fuel Efficiency (km / L)
+* Vehicle ROI:
 
-📈 8. Operational Analytics
-
-Advanced insights:
-
-Fuel Efficiency → km / L
-
-Vehicle ROI:
-
+```
 (Revenue - (Maintenance + Fuel)) / Acquisition Cost
+```
 
-CSV/PDF exports for reports
+* Export reports (CSV / PDF)
 
-🔄 System Workflow
+---
 
-Add Vehicle → Status: Available
+## 🔄 System Workflow
 
-Add Driver → License Validated
+1. Add Vehicle → Status: Available
+2. Add Driver → License Verified
+3. Assign Trip → Capacity Validation Applied
+4. Trip Completed → Odometer Updated
+5. Maintenance Logged → Status → In Shop
+6. Analytics Updated Automatically
 
-Assign Trip → Capacity Check Applied
+---
 
-Trip Completed → Odometer Updated
 
-Maintenance Logged → Status switches to In Shop
 
-Analytics auto-update cost per km
+## 🚀 Getting Started
 
-🧠 Key Business Logic
+### 1️⃣ Clone Repository
 
-Capacity validation before dispatch
-
-License expiry blocks driver assignment
-
-Maintenance auto-removes vehicle from dispatch pool
-
-Real-time availability tracking
-
-Automatic cost aggregation per vehicle
-🚀 Getting Started
-1️⃣ Clone the Repository
-git clone https://github.com/yourusername/fleetflow.git
+```bash
+git clone https://github.com/RajLathidadiya/odoo-hackathon.git
 cd fleetflow
-2️⃣ Backend Setup
-cd server
+```
+
+### 2️⃣ Setup Backend
+
+```bash
+cd backend
 npm install
 npm run dev
-3️⃣ Frontend Setup
-cd client
+```
+
+### 3️⃣ Setup Frontend
+
+```bash
+cd frontend
 npm install
-npm start
-📌 Future Improvements
+npm run dev
+```
 
-Real-time WebSocket updates
+---
 
-Predictive maintenance alerts
+## 🧠 Key Business Logic
 
-AI-based fuel anomaly detection
+* Capacity-based trip validation
+* License expiry enforcement
+* Automatic vehicle availability tracking
+* Maintenance state blocking dispatch
+* Per-vehicle cost aggregation
 
-Fleet heatmap tracking
+---
 
-Multi-branch logistics support
+## 📌 Future Enhancements
 
-📄 License
+* Real-time socket updates
+* Predictive maintenance alerts
+* AI-based fuel anomaly detection
+* Fleet heatmap tracking
+* Advanced analytics dashboard
+
+---
+
+## 📄 License
 
 This project is built for academic and portfolio purposes.
