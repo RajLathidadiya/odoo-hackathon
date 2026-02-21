@@ -87,15 +87,18 @@ export default function FuelPage() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Liters *</label>
-              <input className="ff-input" type="number" step="0.1" {...register('liters', { required: 'Required' })} placeholder="50" />
+              <input className="ff-input" type="number" step="0.1" min="0" {...register('liters', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="50" />
+              {errors.liters && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.liters.message}</p>}
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Total Cost (₹) *</label>
-              <input className="ff-input" type="number" {...register('cost', { required: 'Required' })} placeholder="4775" />
+              <input className="ff-input" type="number" min="0" {...register('cost', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="4775" />
+              {errors.cost && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.cost.message}</p>}
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Odometer (km) *</label>
-              <input className="ff-input" type="number" {...register('odometer_reading', { required: 'Required' })} placeholder="45000" />
+              <input className="ff-input" type="number" min="0" {...register('odometer_reading', { required: 'Required', min: { value: 0, message: 'Must be 0 or positive' } })} placeholder="45000" />
+              {errors.odometer_reading && <p style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#dc2626', marginTop: 2 }}>{errors.odometer_reading.message}</p>}
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 'clamp(11px, 2vw, 12px)', fontWeight: 500, color: '#64748b', marginBottom: 4 }}>Date *</label>
